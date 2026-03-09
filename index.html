@@ -3,120 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills Dashboard</title>
+    <title>Krishan Rice Mills | Management Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f4; }
-        header { background: #1b5e20; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffd700; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f0f4f0; color: #333; }
+        header { background: #1b5e20; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffd700; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
-        /* Navigation Buttons */
-        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; max-width: 600px; margin: auto; }
-        .nav-btn { background: #fff; border: 2px solid #1b5e20; color: #1b5e20; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.3s; }
-        .nav-btn.active { background: #1b5e20; color: white; }
+        /* Balance Card Section */
+        .balance-card { max-width: 500px; margin: 15px auto; background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
+        .balance-item span { font-size: 0.75rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
+        .balance-item div { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
 
-        .container { max-width: 500px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; }
-        .container.active { display: block; }
-        
+        /* Navigation Menu */
+        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; max-width: 500px; margin: auto; }
+        .nav-btn { background: white; border: 2px solid #1b5e20; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #1b5e20; transition: 0.3s; }
+        .nav-btn.active { background: #1b5e20; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        /* Form Section */
+        .container { max-width: 450px; margin: 15px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; color: #1b5e20; font-size: 1.2rem; text-align: center; text-transform: uppercase; }
         .form-group { margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        input:focus { border-color: #1b5e20; outline: none; background-color: #f9fff9; }
         
-        .submit-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-in { flex: 1; background: #2e7d32; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-out { flex: 1; background: #d32f2f; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-in { flex: 1; background: #2e7d32; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-out { flex: 1; background: #d32f2f; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-in:hover { background: #1b5e20; }
+        .btn-out:hover { background: #b71c1c; }
         
-        #status { text-align: center; margin-top: 15px; font-weight: bold; }
+        #status { text-align: center; margin-top: 15px; font-weight: bold; min-height: 20px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1b5e20; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <p>Management Portal</p>
+    <p>Management Dashboard</p>
 </header>
 
+<div class="balance-card">
+    <h3 id="sheet-title" style="margin:0; font-size:0.9rem; letter-spacing:2px;">DAILY CASH BALANCE</h3>
+    <div class="balance-grid">
+        <div class="balance-item">
+            <span>Jama (In)</span>
+            <div id="total-in">₹0</div>
+        </div>
+        <div class="balance-item">
+            <span>Kharcha (Out)</span>
+            <div id="total-out">₹0</div>
+        </div>
+        <div class="balance-item">
+            <span>Bachat (Net)</span>
+            <div id="net-balance" style="color:#ffd700">₹0</div>
+        </div>
+    </div>
+    <button onclick="fetchBalance()" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; border-radius:5px; margin-top:15px; padding:5px 15px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Data</button>
+</div>
+
 <div class="nav-menu">
-    <button class="nav-btn active" onclick="showSection('daily')">Daily Cash</button>
-    <button class="nav-btn" onclick="showSection('bank')">Bank Account</button>
-    <button class="nav-btn" onclick="showSection('salary')">Salary Detail</button>
-    <button class="nav-btn" onclick="showSection('labour')">Labour Cash</button>
-</div>
-
-<div id="daily" class="container active">
-    <h2>Daily Cash Detail</h2>
-    <input type="text" id="daily-desc" placeholder="Vivran (e.g. Diesel kharcha)">
-    <input type="number" id="daily-amt" placeholder="Amount (₹)">
-    <div class="submit-group">
-        <button class="btn-in" onclick="sendData('daily', 'IN')">IN (Aaya)</button>
-        <button class="btn-out" onclick="sendData('daily', 'OUT')">OUT (Gaya)</button>
-    </div>
-</div>
-
-<div id="bank" class="container">
-    <h2>Bank Account Detail</h2>
-    <input type="text" id="bank-desc" placeholder="Bank ka Naam / Details">
-    <input type="number" id="bank-amt" placeholder="Amount (₹)">
-    <div class="submit-group">
-        <button class="btn-in" onclick="sendData('bank', 'IN')">Deposit (Jama)</button>
-        <button class="btn-out" onclick="sendData('bank', 'OUT')">Withdraw (Nikala)</button>
-    </div>
-</div>
-
-<div id="salary" class="container">
-    <h2>Staff Salary Detail</h2>
-    <input type="text" id="salary-desc" placeholder="Staff ka Naam">
-    <input type="number" id="salary-amt" placeholder="Salary Amount (₹)">
-    <button class="btn-out" style="width:100%" onclick="sendData('salary', 'OUT')">Salary Pay Karein</button>
-</div>
-
-<div id="labour" class="container">
-    <h2>Labour Cash Detail</h2>
-    <input type="text" id="labour-desc" placeholder="Labour/Toli ka Naam">
-    <input type="number" id="labour-amt" placeholder="Amount (₹)">
-    <div class="submit-group">
-        <button class="btn-in" onclick="sendData('labour', 'IN')">Advance Waapsi</button>
-        <button class="btn-out" onclick="sendData('labour', 'OUT')">Advance Diya</button>
-    </div>
-</div>
-
-<div id="status"></div>
-
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyvK0hZprQOy43zxmVTzNv4pMVFHCRks4JaIL1uZAoL0-sbEBS7uYuh4M468uoU_-yFlQ/exec';
-
-    function showSection(id) {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-        document.getElementById('status').innerText = "";
-    }
-
-    function sendData(section, type) {
-        const desc = document.getElementById(section + '-desc').value;
-        const amt = document.getElementById(section + '-amt').value;
-        const status = document.getElementById('status');
-
-        if(!desc || !amt) { alert("Details bharein!"); return; }
-
-        status.innerText = "Saving data to " + section + "...";
-        status.style.color = "orange";
-
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                targetSheet: section, // Isse data sahi sheet mein jayega
-                description: desc,
-                amount: amt,
-                type: type
-            })
-        }).then(() => {
-            status.innerText = "Mubarak ho! " + section + " data save ho gaya.";
-            status.style.color = "green";
-            document.getElementById(section + '-desc').value = '';
-            document.getElementById(section + '-amt').value = '';
-        });
-    }
-</script>
-
-</body>
-</html>
+    <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
+    <button class="nav-btn" onclick="showSection('bank', this)">Bank Account</button>
+    <button class="nav-btn" onclick="showSection('salary', this)">Staff Salary</button>
+    <button class="nav-btn" onclick="showSection('labour', this)">Labour Cash</button
