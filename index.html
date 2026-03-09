@@ -3,65 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Management Dashboard</title>
+    <title>Krishan Rice Mills | Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f0f4f0; color: #333; }
-        header { background: #1b5e20; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #ffd700; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f0f4f0; color: #333; }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         
-        /* Balance Card Section */
-        .balance-card { max-width: 500px; margin: 15px auto; background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        /* Balance Card */
+        .balance-card { max-width: 450px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
-        .balance-item span { font-size: 0.75rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
-        .balance-item div { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
+        .balance-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
+        .balance-item div { font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
 
-        /* Navigation Menu */
-        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; max-width: 500px; margin: auto; }
-        .nav-btn { background: white; border: 2px solid #1b5e20; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #1b5e20; transition: 0.3s; }
-        .nav-btn.active { background: #1b5e20; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        /* Navigation */
+        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; max-width: 450px; margin: auto; }
+        .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; font-size: 0.85rem; }
+        .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Form Section */
-        .container { max-width: 450px; margin: 15px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; color: #1b5e20; font-size: 1.2rem; text-align: center; text-transform: uppercase; }
+        /* Form & History Container */
+        .container { max-width: 420px; margin: 10px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
-        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
-        input:focus { border-color: #1b5e20; outline: none; background-color: #f9fff9; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         
-        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
-        .btn-in { flex: 1; background: #2e7d32; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-        .btn-out { flex: 1; background: #d32f2f; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-        .btn-in:hover { background: #1b5e20; }
-        .btn-out:hover { background: #b71c1c; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        #status { text-align: center; margin-top: 15px; font-weight: bold; min-height: 20px; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1b5e20; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Vertical History */
+        .history-section { max-width: 420px; margin: 15px auto; background: #fff; padding: 15px; border-radius: 15px; }
+        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; align-items: center; }
+        .hist-info { display: flex; flex-direction: column; }
+        .hist-desc { font-weight: bold; font-size: 0.95rem; }
+        .hist-amt-in { color: var(--secondary); font-weight: bold; }
+        .hist-amt-out { color: var(--red); font-weight: bold; }
+        
+        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>KRISHAN RICE MILLS</h1>
-    <p>Management Dashboard</p>
+    <h1 style="margin:0; font-size:1.4rem;">KRISHAN RICE MILLS</h1>
+    <p style="margin:5px 0 0; font-size:0.8rem; opacity:0.9;">Digital Hisaab-Kitaab Portal</p>
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; font-size:0.9rem; letter-spacing:2px;">DAILY CASH BALANCE</h3>
+    <h3 id="sheet-title" style="margin:0; font-size:0.9rem; letter-spacing:1px;">DAILY BALANCE</h3>
     <div class="balance-grid">
-        <div class="balance-item">
-            <span>Jama (In)</span>
-            <div id="total-in">₹0</div>
-        </div>
-        <div class="balance-item">
-            <span>Kharcha (Out)</span>
-            <div id="total-out">₹0</div>
-        </div>
-        <div class="balance-item">
-            <span>Bachat (Net)</span>
-            <div id="net-balance" style="color:#ffd700">₹0</div>
-        </div>
+        <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0</div></div>
+        <div class="balance-item"><span>Kharcha (Out)</span><div id="total-out">₹0</div></div>
+        <div class="balance-item"><span>Bachat (Net)</span><div id="net-balance" style="color:var(--accent)">₹0</div></div>
     </div>
-    <button onclick="fetchBalance()" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; border-radius:5px; margin-top:15px; padding:5px 15px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Data</button>
+    <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Data</button>
 </div>
 
 <div class="nav-menu">
@@ -72,9 +66,8 @@
 </div>
 
 <div class="container">
-    <h2 id="form-title">Daily Cash Entry</h2>
     <div class="form-group">
-        <label>Vivran (Description):</label>
+        <label>Vivran (Details):</label>
         <input type="text" id="desc" placeholder="Details likhein...">
     </div>
     <div class="form-group">
@@ -88,30 +81,27 @@
     <div id="status"></div>
 </div>
 
+<div class="history-section">
+    <h3 style="margin:0 0 10px; font-size:1rem; color:var(--primary);">Recent History</h3>
+    <div id="history-list"><small>Loading history...</small></div>
+</div>
+
 <script>
     // Aapka Provide kiya hua Naya Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzYUEmdl2bOAAxrv5_WsexF7vDpdvzqMbgqbyJisFjloSWIo91XMcMhq_H0OYJxpuLLhA/exec';
-    
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw6jDbExA0QmmrSpTh_lVn4zAjTCUGQjyS4Htc8GSMGi_Q4Ckcypo1brFY8GqTIEeJ2_Q/exec';
     let currentSheet = 'daily';
 
     function showSection(sheet, btn) {
         currentSheet = sheet;
-        // Navigation button UI change
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        // Form Title Change
-        document.getElementById('form-title').innerText = btn.innerText + " Entry";
         document.getElementById('status').innerText = "";
-        
-        // Fetch Balance for this section
-        fetchBalance();
+        fetchData();
     }
 
-    async function fetchBalance() {
-        const netDisp = document.getElementById('net-balance');
-        netDisp.innerHTML = '<span style="font-size:0.8rem">Updating...</span>';
-        
+    async function fetchData() {
+        const histList = document.getElementById('history-list');
+        histList.innerHTML = "<small>Updating...</small>";
         try {
             const response = await fetch(scriptURL + '?sheet=' + currentSheet);
             const data = await response.json();
@@ -120,9 +110,28 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString('en-IN');
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString('en-IN');
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase() + " BALANCE";
+
+            let historyHTML = '';
+            if(data.history && data.history.length > 0) {
+                // Reverse takki sabse nayi entry upar dikhe
+                data.history.reverse().slice(0, 7).forEach(item => {
+                    let isIncome = Number(item.in) > 0;
+                    let amtVal = isIncome ? "+₹" + item.in : "-₹" + item.out;
+                    let amtClass = isIncome ? "hist-amt-in" : "hist-amt-out";
+                    historyHTML += `
+                        <div class="history-item">
+                            <div class="hist-info">
+                                <span class="hist-desc">${item.desc}</span>
+                            </div>
+                            <div class="${amtClass}">${amtVal}</div>
+                        </div>`;
+                });
+            } else {
+                historyHTML = "<small>No records found.</small>";
+            }
+            histList.innerHTML = historyHTML;
         } catch (e) {
-            console.error("Balance fetch failed");
-            netDisp.innerText = "Error";
+            histList.innerHTML = "<small style='color:red;'>Error fetching data</small>";
         }
     }
 
@@ -131,40 +140,29 @@
         const amt = document.getElementById('amt').value;
         const status = document.getElementById('status');
 
-        if(!desc || !amt) { 
-            alert("Kripya details aur amount bharein!"); 
-            return; 
-        }
+        if(!desc || !amt) { alert("Details aur Amount bharein!"); return; }
 
-        status.innerHTML = '<div class="loader"></div> Saving Data...';
-        status.style.color = "#856404";
+        status.innerText = "Saving Data...";
+        status.style.color = "orange";
 
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({
-                targetSheet: currentSheet,
-                description: desc,
-                amount: amt,
-                type: type
-            })
+            body: JSON.stringify({ targetSheet: currentSheet, description: desc, amount: amt, type: type })
         }).then(() => {
-            status.innerText = "✓ Entry Saved Successfully!";
-            status.style.color = "#155724";
+            status.innerText = "✓ Saved Successfully!";
+            status.style.color = "green";
             document.getElementById('desc').value = '';
             document.getElementById('amt').value = '';
-            
-            // 2 second baad balance auto-update karein
-            setTimeout(fetchBalance, 2000);
+            setTimeout(fetchData, 2000);
             setTimeout(() => { status.innerText = ""; }, 4000);
         }).catch(err => {
-            status.innerText = "Error! Connection problem.";
-            status.style.color = "#721c24";
+            status.innerText = "Error saving data!";
+            status.style.color = "red";
         });
     }
 
-    // Website load hote hi Daily Balance dikhaye
-    window.onload = fetchBalance;
+    window.onload = fetchData;
 </script>
 
 </body>
