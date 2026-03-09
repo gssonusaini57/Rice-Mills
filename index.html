@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Krishan Rice Mills | Dashboard</title>
     <style>
-        :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f0f4f0; color: #333; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f4f7f4; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: var(--bg); color: #333; }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
         /* Balance Card */
         .balance-card { max-width: 450px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -15,47 +15,47 @@
         .balance-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
         .balance-item div { font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
 
-        /* Navigation */
+        /* Navigation Menu */
         .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; max-width: 450px; margin: auto; }
-        .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; font-size: 0.85rem; }
-        .nav-btn.active { background: var(--primary); color: white; }
+        .nav-btn { background: white; border: 2px solid var(--primary); padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); font-size: 0.85rem; transition: 0.3s; }
+        .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
 
-        /* Form & History Container */
-        .container { max-width: 420px; margin: 10px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        /* Input Form */
+        .container { max-width: 410px; margin: 10px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: #555; }
+        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        input:focus { border-color: var(--primary); outline: none; background: #f9fff9; }
         
-        .btn-group { display: flex; gap: 10px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        /* Vertical History */
-        .history-section { max-width: 420px; margin: 15px auto; background: #fff; padding: 15px; border-radius: 15px; }
+        /* History Section */
+        .history-section { max-width: 410px; margin: 15px auto; background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; align-items: center; }
-        .hist-info { display: flex; flex-direction: column; }
         .hist-desc { font-weight: bold; font-size: 0.95rem; }
         .hist-amt-in { color: var(--secondary); font-weight: bold; }
         .hist-amt-out { color: var(--red); font-weight: bold; }
         
-        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.85rem; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.85rem; min-height: 20px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="margin:0; font-size:1.4rem;">KRISHAN RICE MILLS</h1>
-    <p style="margin:5px 0 0; font-size:0.8rem; opacity:0.9;">Digital Hisaab-Kitaab Portal</p>
+    <h1 style="margin:0; font-size:1.5rem;">KRISHAN RICE MILLS</h1>
+    <p style="margin:5px 0 0; font-size:0.8rem; opacity:0.9;">Digital Management Portal</p>
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; font-size:0.9rem; letter-spacing:1px;">DAILY BALANCE</h3>
+    <h3 id="sheet-title" style="margin:0; font-size:0.9rem; letter-spacing:1px; text-transform: uppercase;">DAILY BALANCE</h3>
     <div class="balance-grid">
         <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0</div></div>
         <div class="balance-item"><span>Kharcha (Out)</span><div id="total-out">₹0</div></div>
         <div class="balance-item"><span>Bachat (Net)</span><div id="net-balance" style="color:var(--accent)">₹0</div></div>
     </div>
-    <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Data</button>
+    <button onclick="fetchData()" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Data</button>
 </div>
 
 <div class="nav-menu">
@@ -67,28 +67,29 @@
 
 <div class="container">
     <div class="form-group">
-        <label>Vivran (Details):</label>
-        <input type="text" id="desc" placeholder="Details likhein...">
+        <label>विवरण (Details):</label>
+        <input type="text" id="desc" placeholder="Details likhein (e.g. Rice Sale)">
     </div>
     <div class="form-group">
-        <label>Rashi (Amount ₹):</label>
+        <label>राशि (Amount ₹):</label>
         <input type="number" id="amt" placeholder="0.00">
     </div>
     <div class="btn-group">
-        <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
-        <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
+        <button class="btn-in" onclick="sendData('IN')">CASH IN (आया)</button>
+        <button class="btn-out" onclick="sendData('OUT')">CASH OUT (गया)</button>
     </div>
     <div id="status"></div>
 </div>
 
 <div class="history-section">
-    <h3 style="margin:0 0 10px; font-size:1rem; color:var(--primary);">Recent History</h3>
-    <div id="history-list"><small>Loading history...</small></div>
+    <h3 style="margin:0 0 10px; font-size:1rem; color:var(--primary);">Recent History (pichla hisaab)</h3>
+    <div id="history-list"><small>Loading...</small></div>
 </div>
 
 <script>
     // Aapka Provide kiya hua Naya Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw6jDbExA0QmmrSpTh_lVn4zAjTCUGQjyS4Htc8GSMGi_Q4Ckcypo1brFY8GqTIEeJ2_Q/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbylU-pWWnshzvC93gvMjJqQrS4VWf8aDOZgU4e9Abar28zvp4nrVRXYc1VLuGIlZljySg/exec';
+    
     let currentSheet = 'daily';
 
     function showSection(sheet, btn) {
@@ -100,68 +101,67 @@
     }
 
     async function fetchData() {
-        const histList = document.getElementById('history-list');
-        histList.innerHTML = "<small>Updating...</small>";
+        const hList = document.getElementById('history-list');
+        hList.innerHTML = "<small>Updating data...</small>";
         try {
             const response = await fetch(scriptURL + '?sheet=' + currentSheet);
             const data = await response.json();
             
-            document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString('en-IN');
-            document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString('en-IN');
-            document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString('en-IN');
+            // Numbers format karne ke liye
+            const fmt = (num) => Number(num).toLocaleString('en-IN');
+
+            document.getElementById('total-in').innerText = "₹" + fmt(data.totalIn);
+            document.getElementById('total-out').innerText = "₹" + fmt(data.totalOut);
+            document.getElementById('net-balance').innerText = "₹" + fmt(data.balance);
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase() + " BALANCE";
 
-            let historyHTML = '';
+            let hHTML = '';
             if(data.history && data.history.length > 0) {
-                // Reverse takki sabse nayi entry upar dikhe
-                data.history.reverse().slice(0, 7).forEach(item => {
-                    let isIncome = Number(item.in) > 0;
-                    let amtVal = isIncome ? "+₹" + item.in : "-₹" + item.out;
-                    let amtClass = isIncome ? "hist-amt-in" : "hist-amt-out";
-                    historyHTML += `
-                        <div class="history-item">
-                            <div class="hist-info">
-                                <span class="hist-desc">${item.desc}</span>
-                            </div>
-                            <div class="${amtClass}">${amtVal}</div>
-                        </div>`;
+                // Reverse takki sabse nayi entry upar ho
+                data.history.reverse().slice(0, 10).forEach(item => {
+                    let isIn = Number(item.in) > 0;
+                    let val = isIn ? "+₹" + fmt(item.in) : "-₹" + fmt(item.out);
+                    let cls = isIn ? "hist-amt-in" : "hist-amt-out";
+                    hHTML += `<div class="history-item">
+                        <span class="hist-desc">${item.desc}</span>
+                        <span class="${cls}">${val}</span>
+                    </div>`;
                 });
-            } else {
-                historyHTML = "<small>No records found.</small>";
-            }
-            histList.innerHTML = historyHTML;
-        } catch (e) {
-            histList.innerHTML = "<small style='color:red;'>Error fetching data</small>";
+            } else { hHTML = "<small>No records yet.</small>"; }
+            hList.innerHTML = hHTML;
+        } catch (e) { 
+            hList.innerHTML = "<small style='color:red;'>Error fetching balance. Check App Script.</small>"; 
         }
     }
 
     function sendData(type) {
-        const desc = document.getElementById('desc').value;
-        const amt = document.getElementById('amt').value;
-        const status = document.getElementById('status');
+        const d = document.getElementById('desc').value;
+        const a = document.getElementById('amt').value;
+        const s = document.getElementById('status');
+        if(!d || !a) { alert("Please enter details and amount!"); return; }
 
-        if(!desc || !amt) { alert("Details aur Amount bharein!"); return; }
-
-        status.innerText = "Saving Data...";
-        status.style.color = "orange";
+        s.innerText = "Saving to " + currentSheet + "...";
+        s.style.color = "orange";
 
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({ targetSheet: currentSheet, description: desc, amount: amt, type: type })
+            body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type })
         }).then(() => {
-            status.innerText = "✓ Saved Successfully!";
-            status.style.color = "green";
+            s.innerText = "✓ Saved Successfully!";
+            s.style.color = "green";
             document.getElementById('desc').value = '';
             document.getElementById('amt').value = '';
+            // Data save hone ke baad 2 second wait karke refresh karein
             setTimeout(fetchData, 2000);
-            setTimeout(() => { status.innerText = ""; }, 4000);
+            setTimeout(() => { s.innerText = ""; }, 4000);
         }).catch(err => {
-            status.innerText = "Error saving data!";
-            status.style.color = "red";
+            s.innerText = "Failed to save.";
+            s.style.color = "red";
         });
     }
 
+    // Pehli baar load hone par
     window.onload = fetchData;
 </script>
 
