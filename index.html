@@ -11,8 +11,8 @@
         
         .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
-        .balance-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
-        .balance-item div { font-size: 1.2rem; font-weight: bold; }
+        .balance-item span { font-size: 0.75rem; text-transform: uppercase; opacity: 0.9; }
+        .balance-item div { font-size: 1.3rem; font-weight: bold; margin-top: 5px; }
 
         .nav-menu { display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; }
         .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
@@ -22,14 +22,11 @@
         .left-panel { flex: 1.2; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); height: fit-content; }
         .right-panel { flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-height: 500px; overflow-y: auto; }
 
-        @media (max-width: 768px) {
-            .main-wrapper { flex-direction: column; }
-            .left-panel, .right-panel { width: 100%; box-sizing: border-box; }
-        }
+        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } .left-panel, .right-panel { width: 100%; box-sizing: border-box; } }
 
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
         
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
@@ -52,9 +49,9 @@
 <div class="balance-card">
     <h3 id="sheet-title" style="margin:0; text-transform: uppercase; letter-spacing:1px;">DAILY BALANCE</h3>
     <div class="balance-grid">
-        <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0</div></div>
-        <div class="balance-item"><span>Kharcha (Out)</span><div id="total-out">₹0</div></div>
-        <div class="balance-item"><span>Bachat (Net)</span><div id="net-balance" style="color:var(--accent)">₹0</div></div>
+        <div class="balance-item"><span>Jama (Cash In)</span><div id="total-in">₹0.00</div></div>
+        <div class="balance-item"><span>Kharcha (Cash Out)</span><div id="total-out">₹0.00</div></div>
+        <div class="balance-item"><span>Net Balance</span><div id="net-balance" style="color:var(--accent)">₹0.00</div></div>
     </div>
     <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Manual</button>
 </div>
@@ -86,12 +83,12 @@
 
     <div class="right-panel">
         <h3 style="margin:0 0 10px; font-size:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:5px;">Recent History</h3>
-        <div id="history-list"><small>Loading history...</small></div>
+        <div id="history-list"></div>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbylU-pWWnshzvC93gvMjJqQrS4VWf8aDOZgU4e9Abar28zvp4nrVRXYc1VLuGIlZljySg/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyZB_Pe1rAcFiZHvUF0hbVGkUTZ4YI8dELEQWemZZmJJiJyNQLaNl5uKaxzTEIpLOpCCQ/exec';
     let currentSheet = 'daily';
 
     function showSection(sheet, btn) {
@@ -102,54 +99,51 @@
     }
 
     async function fetchData() {
-        document.getElementById('total-in').innerText = "...";
-        document.getElementById('total-out').innerText = "...";
-        document.getElementById('net-balance').innerText = "...";
-        
+        document.getElementById('status').innerText = "Loading data...";
         try {
             const response = await fetch(scriptURL + '?sheet=' + currentSheet);
             const data = await response.json();
             
-            document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString('en-IN');
-            document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString('en-IN');
-            document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString('en-IN');
+            // formatting for Indian Currency
+            const fmt = (val) => "₹" + parseFloat(val).toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+            document.getElementById('total-in').innerText = fmt(data.totalIn);
+            document.getElementById('total-out').innerText = fmt(data.totalOut);
+            document.getElementById('net-balance').innerText = fmt(data.balance);
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase() + " BALANCE";
 
             let hHTML = '';
             if(data.history && data.history.length > 0) {
                 data.history.reverse().slice(0, 15).forEach(item => {
-                    let isIn = Number(item.in) > 0;
-                    let val = isIn ? "+₹" + Number(item.in).toLocaleString('en-IN') : "-₹" + Number(item.out).toLocaleString('en-IN');
+                    let isIn = parseFloat(item.in) > 0;
+                    let val = isIn ? "+₹" + parseFloat(item.in).toLocaleString('en-IN') : "-₹" + parseFloat(item.out).toLocaleString('en-IN');
                     let cls = isIn ? "hist-amt-in" : "hist-amt-out";
-                    hHTML += `<div class="history-item"><span style="font-size:0.9rem;">${item.desc}</span><span class="${cls}" style="font-size:0.9rem;">${val}</span></div>`;
+                    hHTML += `<div class="history-item"><span>${item.desc}</span><span class="${cls}">${val}</span></div>`;
                 });
-            } else { hHTML = "<small>No records.</small>"; }
+            } else { hHTML = "<small>No records found.</small>"; }
             document.getElementById('history-list').innerHTML = hHTML;
-        } catch (e) { console.log("Fetch error"); }
+            document.getElementById('status').innerText = "";
+        } catch (e) { 
+            document.getElementById('status').innerText = "Fetch Error! Check Script Settings.";
+        }
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const s = document.getElementById('status');
-        if(!d || !a) { alert("Sahi details bharein!"); return; }
+        if(!d || !a) { alert("Details aur Amount bharein!"); return; }
 
-        s.innerText = "Saving Data... Please wait";
-        s.style.color = "orange";
-
+        s.innerText = "Saving...";
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type })
         }).then(() => {
-            s.innerText = "✓ Saved Successfully!";
-            s.style.color = "green";
+            s.innerText = "✓ Saved! Updating Balance...";
             document.getElementById('desc').value = '';
             document.getElementById('amt').value = '';
-            
-            // Yahan Balance refresh karne ke liye 1.5 second ka delay diya hai
-            setTimeout(fetchData, 1500); 
-            setTimeout(() => { s.innerText = ""; }, 4000);
+            setTimeout(fetchData, 2000);
         });
     }
 
