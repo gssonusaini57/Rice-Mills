@@ -9,37 +9,22 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         
-        /* Balance Card Full Width */
         .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
         .balance-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
         .balance-item div { font-size: 1.2rem; font-weight: bold; }
 
-        /* Navigation */
         .nav-menu { display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; }
         .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Main Layout (Flexbox for Side-by-Side) */
-        .main-wrapper { 
-            display: flex; 
-            max-width: 1000px; 
-            margin: 10px auto; 
-            gap: 20px; 
-            padding: 10px;
-            flex-direction: row; /* Default: Side by side */
-        }
-
-        /* Left Side: Form */
+        .main-wrapper { display: flex; max-width: 1000px; margin: 10px auto; gap: 20px; padding: 10px; }
         .left-panel { flex: 1.2; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); height: fit-content; }
-        
-        /* Right Side: History */
         .right-panel { flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-height: 500px; overflow-y: auto; }
 
-        /* Responsive: Mobile par Upar-Neeche */
         @media (max-width: 768px) {
             .main-wrapper { flex-direction: column; }
-            .left-panel, .right-panel { flex: none; width: 100%; box-sizing: border-box; }
+            .left-panel, .right-panel { width: 100%; box-sizing: border-box; }
         }
 
         .form-group { margin-bottom: 15px; }
@@ -71,7 +56,7 @@
         <div class="balance-item"><span>Kharcha (Out)</span><div id="total-out">₹0</div></div>
         <div class="balance-item"><span>Bachat (Net)</span><div id="net-balance" style="color:var(--accent)">₹0</div></div>
     </div>
-    <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 10px; font-size:0.7rem; cursor:pointer;">Refresh Data</button>
+    <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Manual</button>
 </div>
 
 <div class="nav-menu">
@@ -117,8 +102,10 @@
     }
 
     async function fetchData() {
-        const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>Updating...</small>";
+        document.getElementById('total-in').innerText = "...";
+        document.getElementById('total-out').innerText = "...";
+        document.getElementById('net-balance').innerText = "...";
+        
         try {
             const response = await fetch(scriptURL + '?sheet=' + currentSheet);
             const data = await response.json();
@@ -134,14 +121,11 @@
                     let isIn = Number(item.in) > 0;
                     let val = isIn ? "+₹" + Number(item.in).toLocaleString('en-IN') : "-₹" + Number(item.out).toLocaleString('en-IN');
                     let cls = isIn ? "hist-amt-in" : "hist-amt-out";
-                    hHTML += `<div class="history-item">
-                        <span style="font-size:0.9rem;">${item.desc}</span>
-                        <span class="${cls}" style="font-size:0.9rem;">${val}</span>
-                    </div>`;
+                    hHTML += `<div class="history-item"><span style="font-size:0.9rem;">${item.desc}</span><span class="${cls}" style="font-size:0.9rem;">${val}</span></div>`;
                 });
             } else { hHTML = "<small>No records.</small>"; }
-            hList.innerHTML = hHTML;
-        } catch (e) { hList.innerHTML = "Error loading."; }
+            document.getElementById('history-list').innerHTML = hHTML;
+        } catch (e) { console.log("Fetch error"); }
     }
 
     function sendData(type) {
@@ -150,17 +134,22 @@
         const s = document.getElementById('status');
         if(!d || !a) { alert("Sahi details bharein!"); return; }
 
-        s.innerText = "Saving...";
+        s.innerText = "Saving Data... Please wait";
+        s.style.color = "orange";
+
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type })
         }).then(() => {
-            s.innerText = "✓ Saved!";
+            s.innerText = "✓ Saved Successfully!";
+            s.style.color = "green";
             document.getElementById('desc').value = '';
             document.getElementById('amt').value = '';
-            setTimeout(fetchData, 2000);
-            setTimeout(() => { s.innerText = ""; }, 3000);
+            
+            // Yahan Balance refresh karne ke liye 1.5 second ka delay diya hai
+            setTimeout(fetchData, 1500); 
+            setTimeout(() => { s.innerText = ""; }, 4000);
         });
     }
 
