@@ -11,7 +11,6 @@
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .report-btn { background: #ff9800 !important; color: white !important; }
         .balance-card { max-width: 950px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
         .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
@@ -22,24 +21,18 @@
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f4f7f4; color: var(--primary); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
-        @media print { header, .nav-menu, #input-panel, button { display: none !important; } #print-header { display: block !important; } .panel { box-shadow: none; width: 100%; } .balance-card { color: black !important; background: white !important; border: 1px solid #000; } }
+        @media print { header, .nav-menu, #input-panel, button { display: none !important; } #print-header { display: block !important; } .panel { box-shadow: none; width: 100%; } }
     </style>
 </head>
 <body>
 
-<div id="print-header" style="display:none; text-align:center;">
-    <h1>KRISHNA RICE MILLS</h1>
-    <p>Adress: Dudhan Sadhan | Phone: 9478480771</p>
-</div>
-
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <button style="position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Data</button>
+    <button style="position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Refresh</button>
 </header>
 
 <div class="balance-card">
@@ -58,7 +51,7 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
-    <button class="nav-btn report-btn" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
+    <button class="nav-btn" style="background: #ff9800; color: white;" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
 </div>
 
 <div class="main-wrapper">
@@ -81,7 +74,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h3 style="margin:0;">History Log</h3>
             <select id="monthFilter" onchange="fetchData()" style="width: auto; margin:0;">
-                <option value="" selected>Full Year (All)</option>
+                <option value="" selected>Full Year</option>
                 <optgroup label="2026">
                     <option value="1-2026">Jan 2026</option><option value="2-2026">Feb 2026</option><option value="3-2026">Mar 2026</option>
                 </optgroup>
@@ -116,15 +109,11 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const inputPanel = document.getElementById('input-panel');
-        const monthFilter = document.getElementById('monthFilter');
-
         if(sheet === 'reports') {
             inputPanel.style.display = 'none';
-            monthFilter.style.display = 'none';
             fetchReports();
         } else {
             inputPanel.style.display = 'block';
-            monthFilter.style.display = 'block';
             setupInputs(sheet);
             fetchData();
         }
@@ -136,7 +125,7 @@
             let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
             let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Select Account --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Custom...</option></select><input type="text" id="desc" placeholder="Details...">`;
+            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
         } else if(sheet === 'salary') {
             container.innerHTML = `<select id="desc">${staffNames.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
         } else {
@@ -146,61 +135,65 @@
 
     function setDesc(v) { const d = document.getElementById('desc'); if(v === "CUSTOM") { d.value = ""; d.focus(); } else if(v !== "") { d.value = v; } }
 
+    function formatDate(dateStr) {
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return "N/A";
+            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch(e) { return "N/A"; }
+    }
+
     async function fetchData() {
         const body = document.getElementById('list-body');
         const m = document.getElementById('monthFilter').value;
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing with Sheet...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing...</td></tr>";
 
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&month=${m}&t=${new Date().getTime()}`);
             const data = await res.json();
             
-            document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
             document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString();
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
 
             if (!data.history || data.history.length === 0) {
-                body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>No data found. Select 'Full Year' or check Google Sheet.</td></tr>";
+                body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No entries. Check Google Sheet dates.</td></tr>";
                 return;
             }
 
             body.innerHTML = data.history.reverse().map(i => `<tr>
-                <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
-                <td>${i.desc}</td>
+                <td>${formatDate(i.date)}</td>
+                <td>${i.desc || '-'}</td>
                 <td style="color:green">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td>
                 <td style="color:red">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td>
             </tr>`).join('');
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Error connecting to Google Sheets.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Error loading.</td></tr>"; }
     }
 
     async function fetchReports() {
         const body = document.getElementById('list-body');
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Calculating Yearly Summary...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Calculating...</td></tr>";
         try {
-            const res = await fetch(`${scriptURL}?action=getReports&t=${new Date().getTime()}`);
+            const res = await fetch(`${scriptURL}?action=getReports`);
             const data = await res.json();
             body.innerHTML = Object.keys(data.monthly).map(m => {
                 let r = data.monthly[m];
-                return `<tr><td><b>${m}</b></td><td>₹${r.opening} (Open)</td><td style="color:green">+₹${r.in}</td><td style="color:red">-₹${r.out}</td></tr>`;
+                return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td style="color:green">+₹${r.in}</td><td style="color:red">-₹${r.out}</td></tr>`;
             }).join('');
-            document.getElementById('net-balance').innerText = "₹" + Number(data.grandTotal).toLocaleString();
-        } catch (e) { body.innerHTML = "Error loading reports."; }
+        } catch (e) { body.innerHTML = "Error."; }
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a) return alert("Please fill details!");
-
-        const status = document.getElementById('status');
-        status.innerText = "⏳ Saving...";
+        if(!d || !a) return alert("Fill details!");
+        document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })})
         .then(() => {
-            status.innerText = "✓ Saved!";
+            document.getElementById('status').innerText = "✓ Saved!";
             document.getElementById('amt').value = '';
-            setTimeout(() => { fetchData(); status.innerText = ""; }, 1500);
+            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 1500);
         });
     }
 </script>
