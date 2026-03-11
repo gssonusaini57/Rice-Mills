@@ -9,13 +9,15 @@
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         
-        .refresh-btn { position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        .refresh-btn { position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.3s; }
+        .refresh-btn:hover { transform: rotate(180deg); background: white; }
 
         .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        
+        .balance-item div { font-size: 1.4rem; font-weight: bold; }
+
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; flex-wrap: wrap; }
-        .nav-btn { background: white; border: 2px solid var(--primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary); }
+        .nav-btn { background: white; border: 2px solid var(--primary); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; }
 
         .main-wrapper { display: flex; max-width: 1100px; margin: auto; gap: 20px; padding: 10px; }
@@ -23,17 +25,18 @@
         .left-panel { flex: 1; height: fit-content; } 
         .right-panel { flex: 1.2; max-height: 700px; overflow-y: auto; }
         
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
-
-        label { font-size: 0.8rem; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px; }
+        label { font-size: 0.85rem; font-weight: bold; color: var(--primary); display: block; margin-bottom: 5px; }
         select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; margin-bottom: 12px; font-size: 1rem; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .date-tag { font-size: 0.75rem; color: #777; font-weight: bold; text-transform: uppercase; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .date-badge { font-size: 0.7rem; color: #777; font-weight: bold; background: #eee; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
         #status { text-align: center; margin-top: 10px; font-weight: bold; }
+
+        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
+        @media print { .nav-menu, .left-panel, header, .refresh-btn { display: none !important; } .right-panel { width: 100%; } }
     </style>
 </head>
 <body>
@@ -44,11 +47,11 @@
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0;">DAILY CASH</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
     <div class="balance-grid">
         <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0.00</div></div>
         <div class="balance-item"><span>Kharch (Out)</span><div id="total-out">₹0.00</div></div>
-        <div class="balance-item" style="color:var(--accent)"><span>Net Bachat</span><div id="net-balance">₹0.00</div></div>
+        <div class="balance-item" style="color:var(--accent)"><span>Bachat</span><div id="net-balance">₹0.00</div></div>
     </div>
 </div>
 
@@ -56,21 +59,21 @@
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
     <button class="nav-btn" onclick="showSection('bank', this)">Bank Account</button>
     <button class="nav-btn" onclick="showSection('salary', this)">Staff/Partner</button>
-    <button class="nav-btn" onclick="showSection('expenditure', this)">Expenditures</button>
+    <button class="nav-btn" onclick="showSection('expenditure', this)">💸 Expenditures</button>
 </div>
 
 <div class="main-wrapper">
     <div class="left-panel">
-        <h3 style="color:var(--primary); margin:0 0 10px;">Nayi Entry</h3>
+        <h3 style="color:var(--primary); margin:0 0 15px;">Nayi Entry</h3>
         
-        <label>Entry Date:</label>
+        <label>Tareekh Chunein:</label>
         <input type="date" id="entryDate">
 
         <label>Detail Select Karein:</label>
         <div id="desc-container"></div>
         
-        <label>Amount (₹):</label>
-        <input type="number" id="amt" placeholder="0.00">
+        <label>Rakam (Amount ₹):</label>
+        <input type="number" id="amt" placeholder="0.00" step="0.01">
 
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
@@ -79,8 +82,9 @@
         <div id="status"></div>
         
         <div id="filter-section" style="margin-top:20px; border-top:2px solid #eee; padding-top:15px; display:none;">
+            <label>Filter Karein:</label>
             <select id="staffFilter" onchange="fetchData()" style="background:#fff9c4;"></select>
-            <button onclick="window.print()" style="width:100%; padding:10px; border-radius:10px; background:#555; color:white; border:none; cursor:pointer;">🖨️ Print Report</button>
+            <button onclick="window.print()" style="width:100%; padding:10px; border-radius:10px; background:#555; color:white; border:none; cursor:pointer; font-weight:bold;">🖨️ Print Report</button>
         </div>
     </div>
 
@@ -91,7 +95,8 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxsLKkFIQhxpf9NGRL6_Y8_9Bf0B0Ubhw56bueYz25u0Tcy8_nPXOEKjyCtKPjfMm0Uxw/exec';
+    // New Script URL applied
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyCGVtRiSQiaJtUnP4Pi3mGvOlf0CbGW1JvCcFu8uogLpmws-xaNT4P-BPkTbYmITatSA/exec';
     
     // Default Aaj ki Date set karna
     window.onload = () => {
@@ -118,11 +123,11 @@
             let pOpts = staffNames.map(s => `<option value="${s} (Partner)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
             let eOpts = expTypes.map(e => `<option value="${e}">${e}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Chunein --</option><optgroup label="Expenditure">${eOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">--- Custom Type ---</option></select><input type="text" id="desc" placeholder="Detail likhein...">`;
+            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Quick Select --</option><optgroup label="Expenditure">${eOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">--- Custom Type (Likhein) ---</option></select><input type="text" id="desc" placeholder="Details...">`;
             filterSec.style.display = 'none';
         } else if(sheet === 'bank') {
             let bOpts = bankNames.map(b => `<option value="${b}">${b}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Bank Select --</option>${bOpts}<option value="CUSTOM">--- Custom Bank ---</option></select><input type="text" id="desc" placeholder="Bank Name...">`;
+            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Bank Chunein --</option>${bOpts}<option value="CUSTOM">--- Custom Bank ---</option></select><input type="text" id="desc" placeholder="Bank Detail...">`;
             filterSec.style.display = 'none';
         } else if(sheet === 'salary') {
             let opts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -145,7 +150,7 @@
     async function fetchData() {
         let staff = (currentSheet === 'salary') ? document.getElementById('staffFilter').value : "All";
         const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>Loading data...</small>";
+        hList.innerHTML = "<small>Refreshing data...</small>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&staff=${staff}`);
             const data = await res.json();
@@ -159,29 +164,34 @@
             let hHTML = data.history.reverse().slice(0,40).map(item => {
                 let isIn = parseFloat(item.in) > 0;
                 let d = new Date(item.date);
-                let dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-                return `<div class="history-item"><div><span class="date-tag">${dateStr}</span><br><b>${item.desc}</b></div><b style="color:${isIn?'green':'red'}">${isIn?'+₹'+item.in:'-₹'+item.out}</b></div>`;
+                let dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                return `<div class="history-item"><div><span class="date-badge">${dateStr}</span><br><b>${item.desc}</b></div><b style="color:${isIn?'green':'red'}">${isIn?'+₹'+item.in:'-₹'+item.out}</b></div>`;
             }).join('');
-            hList.innerHTML = hHTML || "No data.";
-        } catch (e) { hList.innerHTML = "Error!"; }
+            hList.innerHTML = hHTML || "Koi record nahi mila.";
+        } catch (e) { hList.innerHTML = "Error loading data. Try Refresh."; }
     }
 
     function sendData(type) {
-        let d = document.getElementById('desc').value;
+        const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
-        const dt = document.getElementById('entryDate').value; // Custom Date
-        if(!d || !a || !dt) return alert("Date, Detail aur Amount bharein!");
+        const dt = document.getElementById('entryDate').value;
+        const status = document.getElementById('status');
+        
+        if(!d || !a || !dt) return alert("Tareekh, Details aur Amount zaroori hain!");
 
-        document.getElementById('status').innerText = "Saving...";
+        status.innerText = "Data save ho raha hai...";
+        status.style.color = "orange";
+
         fetch(scriptURL, { 
             method: 'POST', 
             mode: 'no-cors', 
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })
         }).then(() => {
-            document.getElementById('status').innerText = "✓ Saved!";
+            status.innerText = "✓ Safaltapurvak Save Hua!";
+            status.style.color = "green";
             document.getElementById('amt').value = '';
             setTimeout(fetchData, 1500);
-            setTimeout(() => { document.getElementById('status').innerText = ""; }, 3000);
+            setTimeout(() => { status.innerText = ""; }, 3000);
         });
     }
 </script>
