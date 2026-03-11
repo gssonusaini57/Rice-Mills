@@ -6,54 +6,61 @@
     <title>Krishan Rice Mills | Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f4f7f4; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: var(--bg); color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         
         .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
-        .balance-item span { font-size: 0.75rem; text-transform: uppercase; opacity: 0.9; }
-        .balance-item div { font-size: 1.3rem; font-weight: bold; margin-top: 5px; }
+        .balance-item div { font-size: 1.3rem; font-weight: bold; }
 
-        .nav-menu { display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; }
-        .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
+        .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; flex-wrap: wrap; }
+        .nav-btn { background: white; border: 2px solid var(--primary); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        .main-wrapper { display: flex; max-width: 1000px; margin: 10px auto; gap: 20px; padding: 10px; }
-        .left-panel { flex: 1.2; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); height: fit-content; }
-        .right-panel { flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-height: 500px; overflow-y: auto; }
+        .main-wrapper { display: flex; max-width: 1100px; margin: auto; gap: 20px; padding: 10px; }
+        .left-panel, .right-panel { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .left-panel { flex: 1; height: fit-content; } 
+        .right-panel { flex: 1.2; max-height: 700px; overflow-y: auto; }
 
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } .left-panel, .right-panel { width: 100%; box-sizing: border-box; } }
+        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
 
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
         
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-        .hist-amt-in { color: var(--secondary); font-weight: bold; }
-        .hist-amt-out { color: var(--red); font-weight: bold; }
+        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .report-table th, .report-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .report-table th { background: #f2f2f2; color: var(--primary); }
         
-        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.85rem; }
+        .print-btn { background: #555; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; }
+
+        @media print { 
+            .nav-menu, .left-panel, header, button, .print-btn { display: none !important; } 
+            .balance-card { color: black; background: white !important; box-shadow: none; border: 1px solid #000; } 
+            .right-panel { width: 100%; box-shadow: none; }
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <p>Admin Dashboard</p>
+    <p>Admin Control Panel</p>
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; text-transform: uppercase; letter-spacing:1px;">DAILY BALANCE</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DAILY CASH</h3>
     <div class="balance-grid">
-        <div class="balance-item"><span>Jama (Cash In)</span><div id="total-in">₹0.00</div></div>
-        <div class="balance-item"><span>Kharcha (Cash Out)</span><div id="total-out">₹0.00</div></div>
-        <div class="balance-item"><span>Net Balance</span><div id="net-balance" style="color:var(--accent)">₹0.00</div></div>
+        <div class="balance-item"><span>Total Jama (In)</span><div id="total-in">₹0</div></div>
+        <div class="balance-item"><span>Total Kharch (Out)</span><div id="total-out">₹0</div></div>
+        <div class="balance-item" style="color:var(--accent)"><span>Net Bachat</span><div id="net-balance">₹0</div></div>
     </div>
-    <button onclick="fetchData()" style="background:none; border:1px solid white; color:white; border-radius:5px; margin-top:10px; padding:4px 12px; font-size:0.7rem; cursor:pointer;">⟳ Refresh Manual</button>
 </div>
 
 <div class="nav-menu">
@@ -65,13 +72,15 @@
 
 <div class="main-wrapper">
     <div class="left-panel">
-        <h2 style="margin-top:0; color:var(--primary); font-size:1.1rem; text-align:center;">Nayi Entry Karein</h2>
+        <h3 style="color:var(--primary); margin-top:0;">Nayi Entry</h3>
         <div class="form-group">
-            <label>विवरण (Details):</label>
-            <input type="text" id="desc" placeholder="Details likhein...">
+            <label>Vivran (Details):</label>
+            <div id="desc-container">
+                <input type="text" id="desc" placeholder="Details likhein...">
+            </div>
         </div>
         <div class="form-group">
-            <label>राशि (Amount ₹):</label>
+            <label>Amount (₹):</label>
             <input type="number" id="amt" placeholder="0.00">
         </div>
         <div class="btn-group">
@@ -79,60 +88,113 @@
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
         <div id="status"></div>
+
+        <div id="filter-section" style="margin-top:20px; border-top:2px solid #eee; padding-top:15px; display:none;">
+            <label><b>Staff Ledger Filter:</b></label>
+            <select id="staffFilter" onchange="fetchData()" style="margin-top:5px; background:#fff9c4;"></select>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Personal Report</button>
+        </div>
+
+        <div id="monthly-summary" style="margin-top:20px; background:#e8f5e9; padding:15px; border-radius:10px;">
+            <h4 style="margin:0 0 10px; color:var(--primary);">Monthly Overview</h4>
+            <div id="month-list"><small>Calculating monthly totals...</small></div>
+        </div>
     </div>
 
     <div class="right-panel">
-        <h3 style="margin:0 0 10px; font-size:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:5px;">Recent History</h3>
-        <div id="history-list"></div>
+        <h3 style="color:var(--primary); margin-top:0; border-bottom:1px solid #eee; padding-bottom:5px;">Recent History</h3>
+        <div id="history-list">Loading...</div>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyZB_Pe1rAcFiZHvUF0hbVGkUTZ4YI8dELEQWemZZmJJiJyNQLaNl5uKaxzTEIpLOpCCQ/exec';
+    // Aapka Naya Script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwH9uCYkfhomOKZqjpOwKuIYc0Aj2Z2CISyu1_vGkDUE77NZaVo7DqkjSymzWqYx-VTMA/exec';
+    
+    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
+    const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Karamjeet", "Jaswinder", "Sukhwinder", "Cash", "Other"];
+
     let currentSheet = 'daily';
 
     function showSection(sheet, btn) {
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
+        const descCont = document.getElementById('desc-container');
+        const filterSec = document.getElementById('filter-section');
+
+        if(sheet === 'salary') {
+            let opts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
+            descCont.innerHTML = `<select id="desc">${opts}</select>`;
+            filterSec.style.display = 'block';
+            document.getElementById('staffFilter').innerHTML = `<option value="All">All Staff (Combined)</option>` + opts;
+        } 
+        else if(sheet === 'bank') {
+            let opts = bankNames.map(b => `<option value="${b}">${b}</option>`).join('');
+            descCont.innerHTML = `
+                <select id="desc" onchange="checkOther(this.value)">${opts}</select>
+                <div id="other-box" style="display:none; margin-top:10px;"><input type="text" id="other-desc" placeholder="Detail likhein..."></div>`;
+            filterSec.style.display = 'none';
+        }
+        else {
+            descCont.innerHTML = `<input type="text" id="desc" placeholder="Details likhein...">`;
+            filterSec.style.display = 'none';
+        }
         fetchData();
     }
 
+    function checkOther(val) {
+        document.getElementById('other-box').style.display = (val === 'Other') ? 'block' : 'none';
+    }
+
     async function fetchData() {
-        document.getElementById('status').innerText = "Loading data...";
+        let staff = (currentSheet === 'salary' && document.getElementById('staffFilter')) ? document.getElementById('staffFilter').value : "All";
+        const hList = document.getElementById('history-list');
+        hList.innerHTML = "<small>Refreshing data...</small>";
+
         try {
-            const response = await fetch(scriptURL + '?sheet=' + currentSheet);
+            const response = await fetch(`${scriptURL}?sheet=${currentSheet}&staff=${staff}`);
             const data = await response.json();
             
-            // formatting for Indian Currency
-            const fmt = (val) => "₹" + parseFloat(val).toLocaleString('en-IN', {minimumFractionDigits: 2});
+            document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString('en-IN');
+            document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString('en-IN');
+            document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString('en-IN');
+            document.getElementById('sheet-title').innerText = (staff !== "All") ? staff + " Ledger" : currentSheet.toUpperCase();
 
-            document.getElementById('total-in').innerText = fmt(data.totalIn);
-            document.getElementById('total-out').innerText = fmt(data.totalOut);
-            document.getElementById('net-balance').innerText = fmt(data.balance);
-            document.getElementById('sheet-title').innerText = currentSheet.toUpperCase() + " BALANCE";
+            // Monthly Report Calculation
+            const months = {};
+            data.history.forEach(item => {
+                const d = new Date(item.date);
+                const mName = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+                if(!months[mName]) months[mName] = { in: 0, out: 0 };
+                months[mName].in += parseFloat(item.in);
+                months[mName].out += parseFloat(item.out);
+            });
 
-            let hHTML = '';
-            if(data.history && data.history.length > 0) {
-                data.history.reverse().slice(0, 15).forEach(item => {
-                    let isIn = parseFloat(item.in) > 0;
-                    let val = isIn ? "+₹" + parseFloat(item.in).toLocaleString('en-IN') : "-₹" + parseFloat(item.out).toLocaleString('en-IN');
-                    let cls = isIn ? "hist-amt-in" : "hist-amt-out";
-                    hHTML += `<div class="history-item"><span>${item.desc}</span><span class="${cls}">${val}</span></div>`;
-                });
-            } else { hHTML = "<small>No records found.</small>"; }
-            document.getElementById('history-list').innerHTML = hHTML;
-            document.getElementById('status').innerText = "";
-        } catch (e) { 
-            document.getElementById('status').innerText = "Fetch Error! Check Script Settings.";
-        }
+            let mHTML = '<table class="report-table"><tr><th>Month</th><th>In</th><th>Out</th></tr>';
+            for(let m in months) {
+                mHTML += `<tr><td>${m}</td><td style="color:green">₹${months[m].in.toFixed(0)}</td><td style="color:red">₹${months[m].out.toFixed(0)}</td></tr>`;
+            }
+            document.getElementById('month-list').innerHTML = mHTML + '</table>';
+
+            // History Update
+            let hHTML = data.history.reverse().slice(0,30).map(item => {
+                let cls = item.in > 0 ? "color:green" : "color:red";
+                let amt = item.in > 0 ? "+₹" + item.in : "-₹" + item.out;
+                return `<div class="history-item"><span>${item.desc}</span><b style="${cls}">${amt}</b></div>`;
+            }).join('');
+            hList.innerHTML = hHTML || "No records.";
+        } catch (e) { hList.innerHTML = "Error loading. Check Script URL."; }
     }
 
     function sendData(type) {
-        const d = document.getElementById('desc').value;
+        let d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const s = document.getElementById('status');
-        if(!d || !a) { alert("Details aur Amount bharein!"); return; }
+
+        if(currentSheet === 'bank' && d === 'Other') d = document.getElementById('other-desc').value;
+        if(!d || !a) return alert("Details aur Amount bharein!");
 
         s.innerText = "Saving...";
         fetch(scriptURL, {
@@ -140,14 +202,15 @@
             mode: 'no-cors',
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type })
         }).then(() => {
-            s.innerText = "✓ Saved! Updating Balance...";
-            document.getElementById('desc').value = '';
+            s.innerText = "✓ Saved!";
             document.getElementById('amt').value = '';
-            setTimeout(fetchData, 2000);
+            if(document.getElementById('other-box')) document.getElementById('other-desc').value = '';
+            setTimeout(fetchData, 1500);
+            setTimeout(() => { s.innerText = ""; }, 3000);
         });
     }
 
-    window.onload = fetchData;
+    window.onload = () => showSection('daily', document.querySelector('.nav-btn'));
 </script>
 </body>
 </html>
