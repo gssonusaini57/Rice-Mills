@@ -8,23 +8,23 @@
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f4f7f4; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
-        .refresh-btn { position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer; }
-        .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .refresh-btn { position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; flex-wrap: wrap; }
-        .nav-btn { background: white; border: 2px solid var(--primary); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary); transition: 0.3s; }
+        .nav-btn { background: white; border: 2px solid var(--primary); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary); }
         .nav-btn.active { background: var(--primary); color: white; }
         .main-wrapper { display: flex; max-width: 1100px; margin: auto; gap: 20px; padding: 10px; }
         .left-panel, .right-panel { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .left-panel { flex: 1; height: fit-content; } .right-panel { flex: 1.2; max-height: 700px; overflow-y: auto; }
         label { font-size: 0.85rem; font-weight: bold; color: var(--primary); display: block; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; margin-bottom: 12px; font-size: 1rem; box-sizing: border-box; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; margin-bottom: 12px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
         .date-badge { font-size: 0.7rem; color: #777; font-weight: bold; background: #eee; padding: 2px 6px; border-radius: 4px; }
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -35,7 +35,7 @@
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0;">DASHBOARD</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
     <div class="balance-grid">
         <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0.00</div></div>
         <div class="balance-item"><span>Kharch (Out)</span><div id="total-out">₹0.00</div></div>
@@ -53,17 +53,17 @@
 <div class="main-wrapper">
     <div class="left-panel">
         <h3 style="color:var(--primary); margin:0 0 15px;">Nayi Entry</h3>
-        <label>Tareekh:</label>
+        <label>Tareekh Chunein:</label>
         <input type="date" id="entryDate">
         <label>Category:</label>
         <div id="desc-container"></div>
         <label>Amount (₹):</label>
-        <input type="number" id="amt" placeholder="0.00">
+        <input type="number" id="amt" placeholder="0.00" step="0.01">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
-        <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+        <div id="status"></div>
         
         <div id="filter-section" style="margin-top:20px; border-top:2px solid #eee; padding-top:15px; display:none;">
             <select id="staffFilter" onchange="fetchData()" style="background:#fff9c4;"></select>
@@ -79,7 +79,7 @@
 
 <script>
     // New Script URL applied
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzX9eGHAwUP-oqIAmQMpnvS4nRCXQZPbf5bA7ABHbGES09xdozuq-I5S4vKA1AV4T-RsQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzEnhCwVI_JArXG1RrrKAAgC0qyb81s6W1WyUIdZsffbRZW5FVYwrFSZe04noLD7KF5aA/exec';
     
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
@@ -103,11 +103,11 @@
             let pOpts = staffNames.map(s => `<option value="${s} (Partner)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
             let eOpts = expTypes.map(e => `<option value="${e}">${e}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Select --</option><optgroup label="Expenditure">${eOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">--- Custom Bank/Detail ---</option></select><input type="text" id="desc" placeholder="Details (Add 'Bank' for bank entries)...">`;
+            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Quick Select --</option><optgroup label="Expenditure">${eOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">--- Custom ---</option></select><input type="text" id="desc" placeholder="Details...">`;
             filterSec.style.display = 'none';
         } else if(sheet === 'bank') {
             let bOpts = bankNames.map(b => `<option value="${b}">${b}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Bank Select --</option>${bOpts}<option value="CUSTOM">--- Custom Bank ---</option></select><input type="text" id="desc" placeholder="Bank Detail...">`;
+            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Bank --</option>${bOpts}<option value="CUSTOM">--- Custom ---</option></select><input type="text" id="desc" placeholder="Bank Detail...">`;
             filterSec.style.display = 'none';
         } else if(sheet === 'salary') {
             let opts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -123,7 +123,7 @@
 
     function setDesc(val) {
         const d = document.getElementById('desc');
-        if(val === "CUSTOM") { d.value = ""; d.focus(); d.placeholder="Example: HDFC Bank or Tea Bill"; }
+        if(val === "CUSTOM") { d.value = ""; d.focus(); }
         else if(val !== "") { d.value = val; }
     }
 
@@ -133,27 +133,33 @@
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&staff=${staff}`);
             const data = await res.json();
-            const fmt = (n) => "₹" + parseFloat(n).toLocaleString('en-IN', {minimumFractionDigits: 2});
+            const fmt = (n) => "₹" + (parseFloat(n) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
             document.getElementById('total-in').innerText = fmt(data.totalIn);
             document.getElementById('total-out').innerText = fmt(data.totalOut);
             document.getElementById('net-balance').innerText = fmt(data.balance);
-            document.getElementById('sheet-title').innerText = (staff !== "All") ? staff + " Ledger" : currentSheet.toUpperCase();
+            document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
+
+            if (!data.history || data.history.length === 0) {
+                hList.innerHTML = "<p style='text-align:center;color:#999;'>No records found.</p>";
+                return;
+            }
 
             let hHTML = data.history.reverse().slice(0,40).map(item => {
-                let isIn = parseFloat(item.in) > 0;
-                let d = new Date(item.date);
+                let cin = parseFloat(item.in) || 0;
+                let cout = parseFloat(item.out) || 0;
+                let d = item.date ? new Date(item.date) : new Date();
                 let dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-                return `<div class="history-item"><div><span class="date-badge">${dateStr}</span><br><b>${item.desc}</b></div><b style="color:${isIn?'green':'red'}">${isIn?'+₹'+item.in:'-₹'+item.out}</b></div>`;
+                return `<div class="history-item"><div><span class="date-badge">${dateStr}</span><br><b>${item.desc || 'No Detail'}</b></div><b style="color:${cin>0?'green':'red'}">${cin>0?'+₹'+cin:'-₹'+cout}</b></div>`;
             }).join('');
-            hList.innerHTML = hHTML || "No data.";
-        } catch (e) { hList.innerHTML = "Error loading."; }
+            hList.innerHTML = hHTML;
+        } catch (e) { hList.innerHTML = "<p style='color:red;text-align:center;'>Empty Sheet or Error.</p>"; }
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a || !dt) return alert("Fill all fields!");
+        if(!d || !a || !dt) return alert("All fields are required!");
 
         document.getElementById('status').innerText = "Saving...";
         fetch(scriptURL, { 
