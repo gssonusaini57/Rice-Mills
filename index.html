@@ -62,25 +62,26 @@
 
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
-        <h3>Nayi Entry</h3>
-        <label>Tareekh:</label>
+        <h3>New Entry</h3>
+        <label>Date:</label>
         <input type="date" id="entryDate">
         <label>Details:</label>
-        <div id="desc-container"></div>
+        <div id="desc-container">
+            </div>
         <label>Amount (₹):</label>
         <input type="number" id="amt" placeholder="0.00">
         <div class="btn-group">
-            <button class="btn-in" onclick="sendData('IN')">JAMA</button>
-            <button class="btn-out" onclick="sendData('OUT')">KHARCH</button>
+            <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
+            <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
         <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
     </div>
 
     <div id="display-panel" class="panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h3 id="panel-title" style="margin:0;">Transactions</h3>
+            <h3 id="panel-title" style="margin:0;">History</h3>
             <select id="monthFilter" onchange="fetchData()" style="width: auto; margin:0;">
-                <option value="">Poora Saal (All)</option>
+                <option value="">Full Year</option>
                 <optgroup label="2026">
                     <option value="1-2026">Jan 2026</option><option value="2-2026">Feb 2026</option><option value="3-2026" selected>Mar 2026</option>
                 </optgroup>
@@ -101,7 +102,6 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyxxfOopwQPiWbrXfPUNn-f0Wr5Vnt_ZeIg8U9tKPrXd3PdAVBm2BnF2dU-yL5GmxXStQ/exec';
     let currentSheet = 'daily';
 
-    // List of Options
     const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
     const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Cash"];
     const indNames = ["Karamjeet", "Sukhwinder", "Jaswinder"];
@@ -127,17 +127,18 @@
         } else {
             inputPanel.style.display = 'block';
             monthFilter.style.display = 'block';
-            setupInputs(sheet, descCont);
+            setupInputs(sheet);
             fetchData();
         }
     }
 
-    function setupInputs(sheet, container) {
+    function setupInputs(sheet) {
+        const container = document.getElementById('desc-container');
         if(sheet === 'daily') {
-            // DAILY CASH DROPDOWN RESTORED
             let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
             let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
+            
             container.innerHTML = `
                 <select id="quickDesc" onchange="setDesc(this.value)">
                     <option value="">-- Choose Name/Account --</option>
@@ -151,7 +152,7 @@
             let pOpts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
             container.innerHTML = `<select id="desc">${pOpts}</select>`;
         } else {
-            container.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
+            container.innerHTML = `<input type="text" id="desc" placeholder="Enter Details...">`;
         }
     }
 
@@ -165,8 +166,8 @@
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         const m = document.getElementById('monthFilter').value;
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Loading...</td></tr>";
-        head.innerHTML = "<tr><th>Date</th><th>Description</th><th>In</th><th>Out</th></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing...</td></tr>";
+        head.innerHTML = "<tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr>";
 
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&month=${m}`);
@@ -178,21 +179,23 @@
                 <td style="color:green">${i.in > 0 ? '₹'+i.in : '-'}</td>
                 <td style="color:red">${i.out > 0 ? '₹'+i.out : '-'}</td>
             </tr>`).join('');
-        } catch (e) { body.innerHTML = "Error loading."; }
+        } catch (e) { body.innerHTML = "Error loading data."; }
     }
 
     async function fetchReports() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
-        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating...</td></tr>";
-        head.innerHTML = "<tr><th>Month</th><th>Opening</th><th>In</th><th>Out</th><th>Closing</th></tr>";
-        const res = await fetch(`${scriptURL}?action=getReports`);
-        const data = await res.json();
-        body.innerHTML = Object.keys(data.monthly).map(m => {
-            let r = data.monthly[m];
-            return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td style="color:green">+₹${r.in}</td><td style="color:red">-₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
-        }).join('');
-        updateDashboard("YEARLY SUMMARY", data.grandTotal, 0, data.grandTotal);
+        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating Reports...</td></tr>";
+        head.innerHTML = "<tr><th>Month</th><th>Opening</th><th>Cash In</th><th>Cash Out</th><th>Closing</th></tr>";
+        try {
+            const res = await fetch(`${scriptURL}?action=getReports`);
+            const data = await res.json();
+            body.innerHTML = Object.keys(data.monthly).map(m => {
+                let r = data.monthly[m];
+                return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td style="color:green">+₹${r.in}</td><td style="color:red">-₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
+            }).join('');
+            updateDashboard("YEARLY SUMMARY", data.grandTotal, 0, data.grandTotal);
+        } catch (e) { body.innerHTML = "Error loading reports."; }
     }
 
     function updateDashboard(title, tin, tout, bal) {
@@ -206,11 +209,11 @@
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a) return alert("Details and Amount missing!");
-        document.getElementById('status').innerText = "Saving...";
+        if(!d || !a) return alert("Fill Details and Amount!");
+        document.getElementById('status').innerText = "Saving Transaction...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })})
         .then(() => { 
-            document.getElementById('status').innerText = "✓ Saved!";
+            document.getElementById('status').innerText = "✓ Saved Successfully!";
             document.getElementById('amt').value = '';
             setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 2000);
         });
