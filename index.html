@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Management</title>
+    <title>Krishan Rice Mills | Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f4f7f4; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         .refresh-btn { position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; flex-wrap: wrap; }
         .nav-btn { background: white; border: 1.5px solid var(--primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: var(--primary); }
@@ -23,8 +23,8 @@
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .date-badge { font-size: 0.7rem; color: #777; font-weight: bold; background: #eee; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
-        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
+        .date-badge { font-size: 0.7rem; color: #777; font-weight: bold; background: #eee; padding: 2px 6px; border-radius: 4px; display: inline-block; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; }
         @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
         @media print { .nav-menu, .left-panel, header, .refresh-btn { display: none !important; } .right-panel { width: 100%; } body { background: white; } .balance-card { color: black; background: white !important; border: 1px solid #000; } }
     </style>
@@ -70,7 +70,7 @@
         </div>
         <div id="status"></div>
         <div id="print-area" style="margin-top:20px; display:none;">
-            <button onclick="window.print()" style="width:100%; padding:10px; border-radius:10px; background:#555; color:white; border:none; cursor:pointer; font-weight:bold;">🖨️ Print Report</button>
+            <button onclick="window.print()" style="width:100%; padding:10px; border-radius:10px; background:#555; color:white; border:none; cursor:pointer; font-weight:bold;">🖨️ Print Ledger Report</button>
         </div>
     </div>
 
@@ -125,7 +125,7 @@
 
     async function fetchData() {
         const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>Refreshing...</small>";
+        hList.innerHTML = "<small>🔄 Refreshing...</small>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}`);
             const data = await res.json();
@@ -142,7 +142,7 @@
                 return `<div class="history-item"><div><span class="date-badge">${d.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}</span><br><b>${item.desc}</b></div><b style="color:${cin>0?'green':'red'}">${cin>0?'+₹'+cin:'-₹'+cout}</b></div>`;
             }).join('');
             hList.innerHTML = hHTML || "No data.";
-        } catch (e) { hList.innerHTML = "Error loading."; }
+        } catch (e) { hList.innerHTML = "Error loading. Check Script Connection."; }
     }
 
     function sendData(type) {
@@ -150,9 +150,9 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const status = document.getElementById('status');
-        if(!d || !a || !dt) return alert("All fields are required!");
+        if(!d || !a || !dt) return alert("Please fill all fields!");
 
-        status.innerText = "Saving... Dashboard update ho raha hai.";
+        status.innerText = "Saving to Google Sheets... ⏳";
         status.style.color = "orange";
 
         fetch(scriptURL, { 
@@ -160,7 +160,7 @@
             mode: 'no-cors', 
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })
         }).then(() => {
-            status.innerText = "✓ Saved Successfully!";
+            status.innerText = "✓ Saved! Dashboard updating...";
             status.style.color = "green";
             document.getElementById('amt').value = '';
             setTimeout(() => { fetchData(); status.innerText = ""; }, 3000);
