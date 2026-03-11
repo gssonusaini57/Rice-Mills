@@ -215,4 +215,60 @@
             descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Choose --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><optgroup label="Exp">${eOpts}</optgroup><option value="CUSTOM">--- Custom ---</option></select><input type="text" id="desc" placeholder="Details...">`;
         } else if(sheet === 'salary') {
             let pOpts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
-            desc
+            descCont.innerHTML = `<select id="desc">${pOpts}</select>`;
+        } else {
+            descCont.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
+        }
+        fetchData();
+    }
+
+    function setDesc(val) {
+        const d = document.getElementById('desc');
+        if(val === "CUSTOM") { d.value = ""; d.focus(); }
+        else if(val !== "") { d.value = val; }
+    }
+
+    async function fetchData() {
+        const hList = document.getElementById('history-list');
+        hList.innerHTML = "<small>🔄 Syncing...</small>";
+        try {
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}`);
+            const data = await res.json();
+            const fmt = (n) => "₹" + (parseFloat(n) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+            
+            document.getElementById('total-in').innerText = fmt(data.totalIn);
+            document.getElementById('total-out').innerText = fmt(data.totalOut);
+            document.getElementById('net-balance').innerText = fmt(data.balance);
+            document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
+
+            let hHTML = data.history.reverse().slice(0,50).map(item => {
+                let cin = parseFloat(item.in) || 0;
+                let cout = parseFloat(item.out) || 0;
+                let d = item.date ? new Date(item.date) : new Date();
+                return `<div class="history-item"><div><span class="date-badge">${d.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}</span><br><b>${item.desc}</b></div><b style="color:${cin>0?'#2e7d32':'#d32f2f'}">${cin>0?'+₹'+cin:'-₹'+cout}</b></div>`;
+            }).join('');
+            hList.innerHTML = hHTML || "No transactions.";
+        } catch (e) { hList.innerHTML = "Error loading data."; }
+    }
+
+    function sendData(type) {
+        const d = document.getElementById('desc').value;
+        const a = document.getElementById('amt').value;
+        const dt = document.getElementById('entryDate').value;
+        const status = document.getElementById('status');
+        if(!d || !a || !dt) return alert("Fill all details!");
+
+        status.innerText = "⏳ Saving...";
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })
+        }).then(() => {
+            status.innerText = "✓ Saved!";
+            document.getElementById('amt').value = '';
+            setTimeout(() => { fetchData(); status.innerText = ""; }, 3000);
+        });
+    }
+</script>
+</body>
+</html>
