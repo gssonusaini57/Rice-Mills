@@ -15,10 +15,14 @@
 
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
 
-        /* Print Header - Website par nahi dikhega */
-        #print-header { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-        #print-header h1 { margin: 0; font-size: 28px; color: #000; }
-        #print-header p { margin: 5px 0; font-size: 14px; font-weight: bold; }
+        /* Print Header - Website par hidden rahega */
+        #print-header { 
+            display: none; 
+            text-align: center; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+        }
 
         header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         .refresh-btn { position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer; }
@@ -48,24 +52,31 @@
 
         @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
 
-        /* Print Settings */
+        /* Print Settings - Special Fix */
         @media print {
-            .nav-menu, .left-panel, header, .refresh-btn { display: none !important; }
-            #print-header { display: block !important; } /* Print par header dikhega */
-            .right-panel { width: 100%; border: none; box-shadow: none; }
-            .balance-card { color: black !important; background: white !important; border: 1px solid black; }
-            .balance-grid { background: none; color: black; border-top: 1px solid black; }
-            .history-item { border-bottom: 1px solid #000; }
-            body { background: white; }
+            header, .nav-menu, .left-panel, .refresh-btn, .btn-group { display: none !important; }
+            
+            #print-header { 
+                display: block !important; 
+                visibility: visible !important; 
+                opacity: 1 !important;
+            }
+            
+            .right-panel { width: 100% !important; border: none !important; box-shadow: none !important; }
+            .balance-card { color: black !important; background: white !important; border: 1px solid black !important; }
+            .balance-grid { background: none !important; color: black !important; border-top: 1px solid black !important; }
+            .history-item { border-bottom: 1px solid #000 !important; page-break-inside: avoid; }
+            body { background: white !important; }
         }
     </style>
 </head>
 <body>
 
 <div id="print-header">
-    <h1>KRISHNA RICE MILLS</h1>
-    <p>Dudhan Sadhan | Mobile: 9478480771</p>
-    <p style="text-decoration: underline;">Ledger Statement</p>
+    <h1 style="font-size: 32px; margin-bottom: 5px;">KRISHNA RICE MILLS</h1>
+    <p style="font-size: 18px; margin: 2px 0;">Adress: Dudhan Sadhan</p>
+    <p style="font-size: 18px; margin: 2px 0;">Phone: 9478480771</p>
+    <p style="text-decoration: underline; margin-top: 10px; font-weight: bold;">LEDGER STATEMENT</p>
 </div>
 
 <header>
