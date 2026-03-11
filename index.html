@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Dashboard</title>
+    <title>Krishan Rice Mills | Master Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f4f7f4; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         .balance-card { max-width: 900px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
@@ -23,9 +23,8 @@
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .print-btn { background: #555; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
         #status { text-align: center; margin-top: 10px; font-weight: bold; }
-        @media print { .nav-menu, .left-panel, header, button, .print-btn { display: none !important; } .balance-card { color: black; background: white !important; border: 1px solid #000; } .right-panel { width: 100%; } }
+        @media print { .nav-menu, .left-panel, header, button { display: none !important; } .balance-card { color: black; background: white !important; border: 1px solid #000; } .right-panel { width: 100%; } }
     </style>
 </head>
 <body>
@@ -36,24 +35,24 @@
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DAILY CASH</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
     <div class="balance-grid">
         <div class="balance-item"><span>Jama (In)</span><div id="total-in">₹0.00</div></div>
         <div class="balance-item"><span>Kharch (Out)</span><div id="total-out">₹0.00</div></div>
-        <div class="balance-item" style="color:var(--accent)"><span>Net Balance</span><div id="net-balance">₹0.00</div></div>
+        <div class="balance-item" style="color:var(--accent)"><span>Net Bachat</span><div id="net-balance">₹0.00</div></div>
     </div>
 </div>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
     <button class="nav-btn" onclick="showSection('bank', this)">Bank Account</button>
-    <button class="nav-btn" onclick="showSection('salary', this)">Staff Salary</button>
-    <button class="nav-btn" onclick="showSection('labour', this)">Labour Cash</button>
+    <button class="nav-btn" onclick="showSection('salary', this)">Staff/Partner</button>
+    <button class="nav-btn" onclick="showSection('expenditure', this)">💸 Expenditures</button>
 </div>
 
 <div class="main-wrapper">
     <div class="left-panel">
-        <h3 style="color:var(--primary); margin-top:0;">Nayi Entry</h3>
+        <h3 style="color:var(--primary); margin:0 0 10px;">Nayi Entry</h3>
         <div id="desc-container"></div>
         <input type="number" id="amt" placeholder="Amount ₹" step="0.01">
         <div class="btn-group">
@@ -63,24 +62,24 @@
         <div id="status"></div>
         
         <div id="filter-section" style="margin-top:20px; border-top:2px solid #eee; padding-top:15px; display:none;">
-            <label><b>Personal Ledger Filter:</b></label>
+            <label><b>Ledger Filter:</b></label>
             <select id="staffFilter" onchange="fetchData()" style="background:#fff9c4;"></select>
-            <button class="print-btn" onclick="window.print()">🖨️ Print Personal Report</button>
+            <button onclick="window.print()" style="width:100%; padding:10px; border-radius:10px; background:#555; color:white; border:none; cursor:pointer; font-weight:bold;">🖨️ Print Report</button>
         </div>
     </div>
 
     <div class="right-panel">
-        <h3 style="color:var(--primary); margin-top:0; border-bottom:1px solid #eee; padding-bottom:5px;">Recent History</h3>
+        <h3 style="color:var(--primary); margin:0 0 10px; border-bottom:1px solid #eee;">Transaction History</h3>
         <div id="history-list">Loading...</div>
     </div>
 </div>
 
 <script>
-    // New Script URL applied
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzO4hPCtuAthXBFaHyLsHcWaLHzZcGu3h9_fnGG5fuVkeCDKXC_Y0VX2H9Dj0pXllzi2Q/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzK2pr9dAfAVnSJG-mQ6tEXRlh_KzfADz-DQXjUJtdinX1K3CuCAyI4s1kG_lcxWP6rVg/exec';
     
     const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
     const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Karamjeet", "Jaswinder", "Sukhwinder", "Cash", "Other"];
+    const expTypes = ["Electricity Bill", "Diesel", "Machine Repair", "Tea/Snacks", "Stationery", "Misc Kharcha"];
 
     let currentSheet = 'daily';
 
@@ -93,17 +92,28 @@
         const filterSec = document.getElementById('filter-section');
 
         if(sheet === 'daily') {
-            let opts = staffNames.map(s => `<option value="${s} Deposit">${s}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDailyDesc(this.value)"><option value="">Select Partner (Optional)</option>${opts}<option value="Other">Other</option></select><input type="text" id="desc" placeholder="Details...">`;
+            let pOpts = staffNames.map(s => `<option value="${s} (Partner)">${s}</option>`).join('');
+            let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
+            let eOpts = expTypes.map(e => `<option value="${e} (Exp)">${e}</option>`).join('');
+            
+            descCont.innerHTML = `
+                <select onchange="setDesc(this.value)" style="background:#e3f2fd;">
+                    <option value="">-- Quick Select Account/Kharcha --</option>
+                    <optgroup label="Expenditures (Kharche)">${eOpts}</optgroup>
+                    <optgroup label="Partners/Staff">${pOpts}</optgroup>
+                    <optgroup label="Banks Accounts">${bOpts}</optgroup>
+                    <option value="Other">Custom Type (Type Below)</option>
+                </select>
+                <input type="text" id="desc" placeholder="Details...">`;
             filterSec.style.display = 'none';
         } else if(sheet === 'salary') {
             let opts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
             descCont.innerHTML = `<select id="desc">${opts}</select>`;
             filterSec.style.display = 'block';
-            document.getElementById('staffFilter').innerHTML = `<option value="All">All Staff (Combined)</option>` + opts;
+            document.getElementById('staffFilter').innerHTML = `<option value="All">All Combined</option>` + opts;
         } else if(sheet === 'bank') {
             let opts = bankNames.map(b => `<option value="${b}">${b}</option>`).join('');
-            descCont.innerHTML = `<select id="desc" onchange="checkOther(this.value)">${opts}</select><div id="other-box" style="display:none;"><input type="text" id="other-desc" placeholder="Detail..."></div>`;
+            descCont.innerHTML = `<select id="desc" onchange="checkOther(this.value)">${opts}</select><div id="other-box" style="display:none;"><input type="text" id="other-desc" placeholder="Bank Detail..."></div>`;
             filterSec.style.display = 'none';
         } else {
             descCont.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
@@ -112,19 +122,18 @@
         fetchData();
     }
 
-    function setDailyDesc(val) { if(val !== "Other" && val !== "") document.getElementById('desc').value = val; }
+    function setDesc(val) { if(val !== "Other") document.getElementById('desc').value = val; else document.getElementById('desc').value = ""; }
     function checkOther(val) { document.getElementById('other-box').style.display = (val === 'Other') ? 'block' : 'none'; }
 
     async function fetchData() {
         let staff = (currentSheet === 'salary') ? document.getElementById('staffFilter').value : "All";
         const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>Refreshing...</small>";
+        hList.innerHTML = "<small>Refreshing data...</small>";
 
         try {
             const response = await fetch(`${scriptURL}?sheet=${currentSheet}&staff=${staff}`);
             const data = await response.json();
             
-            // Indian Currency Formatting
             const fmt = (num) => "₹" + parseFloat(num).toLocaleString('en-IN', {minimumFractionDigits: 2});
 
             document.getElementById('total-in').innerText = fmt(data.totalIn);
@@ -132,14 +141,14 @@
             document.getElementById('net-balance').innerText = fmt(data.balance);
             document.getElementById('sheet-title').innerText = (staff !== "All") ? staff + " Ledger" : currentSheet.toUpperCase();
 
-            let hHTML = data.history.reverse().slice(0,25).map(item => {
+            let hHTML = data.history.reverse().slice(0,30).map(item => {
                 let isIn = parseFloat(item.in) > 0;
                 let cls = isIn ? "color:green" : "color:red";
-                let val = isIn ? "+₹"+item.in : "-₹"+item.out;
-                return `<div class="history-item"><span>${item.desc}</span><b style="${cls}">${val}</b></div>`;
+                let amt = isIn ? "+₹"+item.in : "-₹"+item.out;
+                return `<div class="history-item"><span>${item.desc}</span><b style="${cls}">${amt}</b></div>`;
             }).join('');
-            hList.innerHTML = hHTML || "No records found.";
-        } catch (e) { hList.innerHTML = "Error: Click Refresh Manual."; }
+            hList.innerHTML = hHTML || "No records.";
+        } catch (e) { hList.innerHTML = "Error loading data."; }
     }
 
     function sendData(type) {
@@ -147,21 +156,18 @@
         const a = document.getElementById('amt').value;
         const status = document.getElementById('status');
         if(currentSheet === 'bank' && d === 'Other') d = document.getElementById('other-desc').value;
-        if(!d || !a) return alert("Details and Amount required!");
+        if(!d || !a) return alert("Please fill Details & Amount!");
 
-        status.innerText = "Saving Data...";
-        status.style.color = "orange";
-
+        status.innerText = "Saving...";
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type })
         }).then(() => {
-            status.innerText = "✓ Saved Successfully!";
-            status.style.color = "green";
+            status.innerText = "✓ Saved!";
             document.getElementById('amt').value = '';
-            setTimeout(fetchData, 2000);
-            setTimeout(() => status.innerText = "", 4000);
+            setTimeout(fetchData, 1500);
+            setTimeout(() => status.innerText = "", 3000);
         });
     }
 
