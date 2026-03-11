@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Smart Ledger</title>
+    <title>Krishan Rice Mills | Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
@@ -27,8 +27,9 @@
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
         @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
-        @media print { header, .nav-menu, #input-panel, button { display: none !important; } #print-header { display: block !important; } .panel { box-shadow: none; width: 100%; } .balance-card { color: black !important; background: white !important; border: 2px solid #000; } }
+        @media print { header, .nav-menu, #input-panel, button { display: none !important; } #print-header { display: block !important; } .panel { box-shadow: none; width: 100%; } }
     </style>
 </head>
 <body>
@@ -39,7 +40,10 @@
     <p id="print-subtitle" style="font-weight: bold; text-decoration: underline;"></p>
 </div>
 
-<header><h1>KRISHAN RICE MILLS</h1></header>
+<header>
+    <h1>KRISHAN RICE MILLS</h1>
+    <button style="position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Data</button>
+</header>
 
 <div class="balance-card">
     <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
@@ -66,27 +70,29 @@
         <label>Date:</label>
         <input type="date" id="entryDate">
         <label>Details:</label>
-        <div id="desc-container">
-            </div>
+        <div id="desc-container"></div>
         <label>Amount (₹):</label>
         <input type="number" id="amt" placeholder="0.00">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
-        <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+        <div id="status"></div>
     </div>
 
     <div id="display-panel" class="panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h3 id="panel-title" style="margin:0;">History</h3>
+            <h3 style="margin:0;">History Log</h3>
             <select id="monthFilter" onchange="fetchData()" style="width: auto; margin:0;">
                 <option value="">Full Year</option>
                 <optgroup label="2026">
-                    <option value="1-2026">Jan 2026</option><option value="2-2026">Feb 2026</option><option value="3-2026" selected>Mar 2026</option>
+                    <option value="1-2026">Jan 2026</option>
+                    <option value="2-2026">Feb 2026</option>
+                    <option value="3-2026" selected>Mar 2026</option>
                 </optgroup>
                 <optgroup label="2025">
-                    <option value="12-2025">Dec 2025</option><option value="11-2025">Nov 2025</option>
+                    <option value="12-2025">Dec 2025</option>
+                    <option value="11-2025">Nov 2025</option>
                 </optgroup>
             </select>
         </div>
@@ -115,10 +121,8 @@
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
         const inputPanel = document.getElementById('input-panel');
         const monthFilter = document.getElementById('monthFilter');
-        const descCont = document.getElementById('desc-container');
 
         if(sheet === 'reports') {
             inputPanel.style.display = 'none';
@@ -138,57 +142,57 @@
             let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
             let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            
-            container.innerHTML = `
-                <select id="quickDesc" onchange="setDesc(this.value)">
-                    <option value="">-- Choose Name/Account --</option>
-                    <optgroup label="Partners/Individuals">${iOpts}</optgroup>
-                    <optgroup label="Staff">${pOpts}</optgroup>
-                    <optgroup label="Banks">${bOpts}</optgroup>
-                    <option value="CUSTOM">--- Type Manually ---</option>
-                </select>
-                <input type="text" id="desc" placeholder="Details (Diesel, Tea, etc.)">`;
+            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Select Name --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Custom...</option></select><input type="text" id="desc" placeholder="Details...">`;
         } else if(sheet === 'salary') {
-            let pOpts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
-            container.innerHTML = `<select id="desc">${pOpts}</select>`;
+            container.innerHTML = `<select id="desc">${staffNames.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
         } else {
-            container.innerHTML = `<input type="text" id="desc" placeholder="Enter Details...">`;
+            container.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
         }
     }
 
-    function setDesc(val) {
-        const d = document.getElementById('desc');
-        if(val === "CUSTOM") { d.value = ""; d.focus(); }
-        else if(val !== "") { d.value = val; }
+    function setDesc(v) { 
+        const d = document.getElementById('desc'); 
+        if(v === "CUSTOM") { d.value = ""; d.focus(); } else if(v !== "") { d.value = v; } 
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         const m = document.getElementById('monthFilter').value;
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Updating History...</td></tr>";
         head.innerHTML = "<tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr>";
 
         try {
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&month=${m}`);
+            // Timestamp added to bypass browser cache
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&month=${m}&t=${new Date().getTime()}`);
             const data = await res.json();
+            
             updateDashboard(currentSheet.toUpperCase(), data.totalIn, data.totalOut, data.balance);
+            
+            if (!data.history || data.history.length === 0) {
+                body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No entries found for this period.</td></tr>";
+                return;
+            }
+
             body.innerHTML = data.history.reverse().map(i => `<tr>
                 <td>${new Date(i.date).toLocaleDateString()}</td>
                 <td>${i.desc}</td>
-                <td style="color:green">${i.in > 0 ? '₹'+i.in : '-'}</td>
-                <td style="color:red">${i.out > 0 ? '₹'+i.out : '-'}</td>
+                <td style="color:green">${i.in > 0 ? '₹' + Number(i.in).toLocaleString() : '-'}</td>
+                <td style="color:red">${i.out > 0 ? '₹' + Number(i.out).toLocaleString() : '-'}</td>
             </tr>`).join('');
-        } catch (e) { body.innerHTML = "Error loading data."; }
+        } catch (e) { 
+            body.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Error syncing data. Refresh page.</td></tr>";
+        }
     }
 
     async function fetchReports() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
-        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating Reports...</td></tr>";
+        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating Yearly Summary...</td></tr>";
         head.innerHTML = "<tr><th>Month</th><th>Opening</th><th>Cash In</th><th>Cash Out</th><th>Closing</th></tr>";
+        
         try {
-            const res = await fetch(`${scriptURL}?action=getReports`);
+            const res = await fetch(`${scriptURL}?action=getReports&t=${new Date().getTime()}`);
             const data = await res.json();
             body.innerHTML = Object.keys(data.monthly).map(m => {
                 let r = data.monthly[m];
@@ -200,22 +204,34 @@
 
     function updateDashboard(title, tin, tout, bal) {
         document.getElementById('sheet-title').innerText = title;
-        document.getElementById('total-in').innerText = "₹" + Number(tin).toLocaleString();
-        document.getElementById('total-out').innerText = "₹" + Number(tout).toLocaleString();
-        document.getElementById('net-balance').innerText = "₹" + Number(bal).toLocaleString();
+        document.getElementById('total-in').innerText = "₹" + Number(tin || 0).toLocaleString();
+        document.getElementById('total-out').innerText = "₹" + Number(tout || 0).toLocaleString();
+        document.getElementById('net-balance').innerText = "₹" + Number(bal || 0).toLocaleString();
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a) return alert("Fill Details and Amount!");
-        document.getElementById('status').innerText = "Saving Transaction...";
-        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })})
-        .then(() => { 
-            document.getElementById('status').innerText = "✓ Saved Successfully!";
+        if(!d || !a) return alert("Please fill details and amount!");
+
+        const status = document.getElementById('status');
+        status.innerText = "⏳ Saving Entry...";
+        status.style.color = "orange";
+
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })
+        }).then(() => {
+            status.innerText = "✓ Saved Successfully!";
+            status.style.color = "green";
             document.getElementById('amt').value = '';
-            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 2000);
+            // Fetch fresh data after short delay
+            setTimeout(() => { fetchData(); status.innerText = ""; }, 1500);
+        }).catch(() => {
+            status.innerText = "❌ Error saving. Try again.";
+            status.style.color = "red";
         });
     }
 </script>
