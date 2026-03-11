@@ -11,134 +11,62 @@
             --accent: #ffd700;
             --red: #d32f2f;
             --bg: #f0f2f5;
-            --card-bg: #ffffff;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: var(--bg);
-            color: #333;
-        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
 
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, #388e3c 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--accent);
-            position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        /* Print Header - Website par nahi dikhega */
+        #print-header { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        #print-header h1 { margin: 0; font-size: 28px; color: #000; }
+        #print-header p { margin: 5px 0; font-size: 14px; font-weight: bold; }
 
-        .refresh-btn {
-            position: absolute;
-            right: 15px;
-            top: 20px;
-            background: var(--accent);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+        header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
+        .refresh-btn { position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer; }
 
-        .balance-card {
-            max-width: 900px;
-            margin: 20px auto;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+        .balance-card { max-width: 900px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .balance-grid { display: flex; justify-content: space-around; margin-top: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
+        .balance-item div { font-size: 1.5rem; font-weight: bold; }
 
-        .balance-grid {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 15px;
-        }
+        .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; flex-wrap: wrap; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; }
 
-        .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
-
-        .nav-menu {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px;
-            flex-wrap: wrap;
-            background: white;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .nav-btn {
-            background: #f8fafc;
-            border: 1px solid #ddd;
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--primary);
-            transition: 0.3s;
-        }
-
-        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        .main-wrapper {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            gap: 20px;
-            padding: 0 15px;
-        }
-
-        .left-panel, .right-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
+        .main-wrapper { display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 15px; }
+        .left-panel, .right-panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .left-panel { flex: 1; height: fit-content; }
         .right-panel { flex: 1.5; }
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1.5px solid #eee;
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .date-badge { font-size: 0.75rem; background: #eee; padding: 3px 8px; border-radius: 5px; color: #666; }
+        .history-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f0f0f0; }
+        .date-badge { font-size: 0.75rem; background: #eee; padding: 3px 8px; border-radius: 5px; }
 
         #status { text-align: center; margin-top: 10px; font-weight: bold; }
 
         @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
+
+        /* Print Settings */
+        @media print {
+            .nav-menu, .left-panel, header, .refresh-btn { display: none !important; }
+            #print-header { display: block !important; } /* Print par header dikhega */
+            .right-panel { width: 100%; border: none; box-shadow: none; }
+            .balance-card { color: black !important; background: white !important; border: 1px solid black; }
+            .balance-grid { background: none; color: black; border-top: 1px solid black; }
+            .history-item { border-bottom: 1px solid #000; }
+            body { background: white; }
+        }
     </style>
 </head>
 <body>
+
+<div id="print-header">
+    <h1>KRISHNA RICE MILLS</h1>
+    <p>Dudhan Sadhan | Mobile: 9478480771</p>
+    <p style="text-decoration: underline;">Ledger Statement</p>
+</div>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
@@ -146,7 +74,7 @@
 </header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; text-transform: uppercase; border:none;">DASHBOARD</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
     <div class="balance-grid">
         <div class="balance-item"><span>JAMA (IN)</span><div id="total-in">₹0.00</div></div>
         <div class="balance-item"><span>KHARCH (OUT)</span><div id="total-out">₹0.00</div></div>
@@ -175,7 +103,7 @@
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
         <div id="status"></div>
-        <button onclick="window.print()" style="width:100%; margin-top:15px; padding:10px; border-radius:10px; border:none; background:#455a64; color:white; cursor:pointer;">🖨️ Print Ledger</button>
+        <button onclick="window.print()" style="width:100%; margin-top:15px; padding:12px; border-radius:10px; border:none; background:#455a64; color:white; font-weight:bold; cursor:pointer;">🖨️ Print Report</button>
     </div>
 
     <div class="right-panel">
@@ -185,12 +113,10 @@
 </div>
 
 <script>
-    // VERIFIED SCRIPT URL
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxv66rUh1zYSMSQFIa3g-lOuvPjRReK8zhRnSdDK6NXnk1vnADVjDx4s7Ip_Wccj1LDVg/exec';
     
     window.onload = () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('entryDate').value = today;
+        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
         showSection('daily', document.querySelector('.nav-btn'));
     };
 
