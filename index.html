@@ -80,63 +80,36 @@
 </div>
 
 <script>
+    // 1. APNA NAYA URL YAHAN DALEIN
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwiLzIquSO8kn5zwx3rFdB3FN-4OcrD0o1mt3GYiLiLrnP5I-3eptbrjo63z9VY130OFg/exec';
     
-    window.onload = () => {
-        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
-        showSection('daily', document.querySelector('.nav-btn'));
-    };
-
-    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
-    const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Cash"];
-    const indNames = ["Karamjeet", "Sukhwinder", "Jaswinder"];
-    const expTypes = ["Electricity Bill", "Diesel", "Machine Repair", "Tea/Snacks"];
-
-    let currentSheet = 'daily';
-
-    function showSection(sheet, btn) {
-        currentSheet = sheet;
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const descCont = document.getElementById('desc-container');
-        document.getElementById('print-area').style.display = (sheet === 'daily') ? 'none' : 'block';
-
-        if(sheet === 'daily') {
-            let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
-            let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
-            let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            let eOpts = expTypes.map(e => `<option value="${e}">${e}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Quick Select --</option><optgroup label="Special">${iOpts}</optgroup><optgroup label="Exp">${eOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">--- Custom ---</option></select><input type="text" id="desc" placeholder="Details...">`;
-        } else if(sheet === 'salary') {
-            // Staff tab mein naam select karne ka option
-            let pOpts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
-            descCont.innerHTML = `<select id="desc">${pOpts}</select>`;
-        } else {
-            descCont.innerHTML = `<input type="text" id="desc" placeholder="Enter Details...">`;
-        }
-        fetchData();
-    }
-
-    function setDesc(val) {
-        const d = document.getElementById('desc');
-        if(val === "CUSTOM") { d.value = ""; d.focus(); }
-        else if(val !== "") { d.value = val; }
-    }
+    // ... baaki puraana code ...
 
     async function fetchData() {
         const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>Refreshing...</small>";
+        // Loading dikhayein
+        hList.innerHTML = "<div style='text-align:center; padding:20px;'><small>🔄 Data dhoond raha hoon...</small></div>";
+        
         try {
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}`);
+            // Hum ek timeout timer laga rahe hain taaki agar net slow ho toh website wait kare
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 10000); // 10 sec wait
+
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}`, { signal: controller.signal });
+            clearTimeout(id);
+
             const data = await res.json();
+            
+            // Numbers ko Indian Format mein badalna
             const fmt = (n) => "₹" + (parseFloat(n) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+            
             document.getElementById('total-in').innerText = fmt(data.totalIn);
             document.getElementById('total-out').innerText = fmt(data.totalOut);
             document.getElementById('net-balance').innerText = fmt(data.balance);
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
 
             if (!data.history || data.history.length === 0) {
-                hList.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>No entries.</p>";
+                hList.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>Abhi koi entry nahi mili.</p>";
                 return;
             }
 
@@ -147,26 +120,16 @@
                 return `<div class="history-item"><div><span class="date-badge">${d.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}</span><br><b>${item.desc || 'No Detail'}</b></div><b style="color:${cin>0?'green':'red'}">${cin>0?'+₹'+cin:'-₹'+cout}</b></div>`;
             }).join('');
             hList.innerHTML = hHTML;
-        } catch (e) { hList.innerHTML = "<p style='color:red; text-align:center;'>Error loading.</p>"; }
-    }
 
-    function sendData(type) {
-        const d = document.getElementById('desc').value;
-        const a = document.getElementById('amt').value;
-        const dt = document.getElementById('entryDate').value;
-        if(!d || !a || !dt) return alert("All fields are required!");
-
-        document.getElementById('status').innerText = "Saving... ⏳";
-        fetch(scriptURL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })
-        }).then(() => {
-            document.getElementById('status').innerText = "✓ Saved Successfully!";
-            document.getElementById('amt').value = '';
-            // Auto refresh logic
-            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 3000);
-        });
+        } catch (e) { 
+            console.error(e);
+            hList.innerHTML = `
+                <div style='color:red; text-align:center; padding:20px;'>
+                    <b>Opps! Data nahi mila.</b><br>
+                    <small>1. Apps Script mein 'Anyone' access check karein.<br>
+                    2. Google Sheet ke tab ka naam sahi karein.</small>
+                </div>`;
+        }
     }
 </script>
 </body>
