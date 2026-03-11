@@ -3,93 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Dashboard</title>
+    <title>Krishan Rice Mills | Smart Ledger</title>
     <style>
-        :root {
-            --primary: #1b5e20;
-            --secondary: #2e7d32;
-            --accent: #ffd700;
-            --red: #d32f2f;
-            --bg: #f0f2f5;
-        }
-
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
-
-        /* Print Header - Website par hidden rahega */
-        #print-header { 
-            display: none; 
-            text-align: center; 
-            border-bottom: 2px solid #000; 
-            padding-bottom: 15px; 
-            margin-bottom: 25px; 
-        }
+        :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
+        
+        /* Print Header */
+        #print-header { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        #print-header h1 { margin: 0; font-size: 28px; }
 
         header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
-        .refresh-btn { position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        
+        .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
+        .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); transition: 0.3s; }
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .report-btn { background: #ff9800 !important; color: white !important; border: none !important; }
 
-        .balance-card { max-width: 900px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .balance-grid { display: flex; justify-content: space-around; margin-top: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
-        .balance-item div { font-size: 1.5rem; font-weight: bold; }
+        .balance-card { max-width: 950px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
+        .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
 
-        .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; flex-wrap: wrap; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); }
-        .nav-btn.active { background: var(--primary); color: white; }
+        .main-wrapper { display: flex; max-width: 1250px; margin: 20px auto; gap: 20px; padding: 0 15px; }
+        .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #input-panel { flex: 0 0 320px; height: fit-content; }
+        #display-panel { flex: 1; }
 
-        .main-wrapper { display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 15px; }
-        .left-panel, .right-panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .left-panel { flex: 1; height: fit-content; }
-        .right-panel { flex: 1.5; }
-
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f4f7f4; color: var(--primary); font-weight: bold; }
+        
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        .history-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f0f0f0; }
-        .date-badge { font-size: 0.75rem; background: #eee; padding: 3px 8px; border-radius: 5px; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
 
-        #status { text-align: center; margin-top: 10px; font-weight: bold; }
-
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
-
-        /* Print Settings - Special Fix */
+        @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { flex: none; width: 100%; box-sizing: border-box; } }
+        
         @media print {
-            header, .nav-menu, .left-panel, .refresh-btn, .btn-group { display: none !important; }
-            
-            #print-header { 
-                display: block !important; 
-                visibility: visible !important; 
-                opacity: 1 !important;
-            }
-            
-            .right-panel { width: 100% !important; border: none !important; box-shadow: none !important; }
-            .balance-card { color: black !important; background: white !important; border: 1px solid black !important; }
-            .balance-grid { background: none !important; color: black !important; border-top: 1px solid black !important; }
-            .history-item { border-bottom: 1px solid #000 !important; page-break-inside: avoid; }
-            body { background: white !important; }
+            header, .nav-menu, #input-panel, .btn-group, button { display: none !important; }
+            #print-header { display: block !important; }
+            .panel { box-shadow: none; border: none; width: 100%; }
+            .balance-card { color: black !important; background: white !important; border: 2px solid #000; }
+            .balance-grid { color: black !important; background: none !important; border-top: 1px solid #000; }
         }
     </style>
 </head>
 <body>
 
 <div id="print-header">
-    <h1 style="font-size: 32px; margin-bottom: 5px;">KRISHNA RICE MILLS</h1>
-    <p style="font-size: 18px; margin: 2px 0;">Adress: Dudhan Sadhan</p>
-    <p style="font-size: 18px; margin: 2px 0;">Phone: 9478480771</p>
-    <p style="text-decoration: underline; margin-top: 10px; font-weight: bold;">LEDGER STATEMENT</p>
+    <h1>KRISHNA RICE MILLS</h1>
+    <p>Dudhan Sadhan | Phone: 9478480771</p>
+    <p id="print-subtitle" style="font-weight: bold; text-decoration: underline;"></p>
 </div>
 
-<header>
-    <h1>KRISHAN RICE MILLS</h1>
-    <button class="refresh-btn" onclick="fetchData()">🔄 Refresh</button>
-</header>
+<header><h1>KRISHAN RICE MILLS</h1></header>
 
 <div class="balance-card">
-    <h3 id="sheet-title" style="margin:0; text-transform: uppercase;">DASHBOARD</h3>
+    <h3 id="sheet-title" style="margin:0; text-transform: uppercase; border:none;">DASHBOARD</h3>
     <div class="balance-grid">
-        <div class="balance-item"><span>JAMA (IN)</span><div id="total-in">₹0.00</div></div>
-        <div class="balance-item"><span>KHARCH (OUT)</span><div id="total-out">₹0.00</div></div>
-        <div class="balance-item" style="color:var(--accent)"><span>BACHAT</span><div id="net-balance">₹0.00</div></div>
+        <div class="balance-item"><span>CASH IN (+)</span><div id="total-in">₹0</div></div>
+        <div class="balance-item"><span>CASH OUT (-)</span><div id="total-out">₹0</div></div>
+        <div class="balance-item" style="color:var(--accent)"><span>NET BALANCE</span><div id="net-balance">₹0</div></div>
     </div>
 </div>
 
@@ -100,92 +76,141 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
-    <button class="nav-btn" onclick="showSection('expenditure', this)">💸 Exp</button>
+    <button class="nav-btn report-btn" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
 </div>
 
 <div class="main-wrapper">
-    <div class="left-panel">
-        <h3 style="color:var(--primary);">Nayi Entry</h3>
+    <div id="input-panel" class="panel">
+        <h3>Nayi Entry</h3>
+        <label>Tareekh:</label>
         <input type="date" id="entryDate">
+        <label>Details:</label>
         <div id="desc-container"></div>
-        <input type="number" id="amt" placeholder="Amount ₹">
+        <label>Amount (₹):</label>
+        <input type="number" id="amt" placeholder="0.00">
         <div class="btn-group">
-            <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
-            <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
+            <button class="btn-in" onclick="sendData('IN')">JAMA</button>
+            <button class="btn-out" onclick="sendData('OUT')">KHARCH</button>
         </div>
         <div id="status"></div>
-        <button onclick="window.print()" style="width:100%; margin-top:15px; padding:12px; border-radius:10px; border:none; background:#455a64; color:white; font-weight:bold; cursor:pointer;">🖨️ Print Report</button>
     </div>
 
-    <div class="right-panel">
-        <h3 style="color:var(--primary);">Transaction History</h3>
-        <div id="history-list">Loading...</div>
+    <div id="display-panel" class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 id="panel-title" style="margin:0;">Transactions</h3>
+            <select id="monthFilter" onchange="fetchData()" style="width: auto; margin:0;">
+                <option value="">Poora Saal (All)</option>
+                <optgroup label="2026">
+                    <option value="1-2026">Jan 2026</option><option value="2-2026">Feb 2026</option><option value="3-2026" selected>Mar 2026</option>
+                </optgroup>
+                <optgroup label="2025">
+                    <option value="12-2025">Dec 2025</option><option value="11-2025">Nov 2025</option><option value="10-2025">Oct 2025</option>
+                </optgroup>
+            </select>
+        </div>
+        
+        <table id="main-table">
+            <thead id="table-head"></thead>
+            <tbody id="list-body"></tbody>
+        </table>
+        
+        <button onclick="window.print()" style="width:100%; margin-top:20px; padding:12px; background:#455a64; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">🖨️ Print Document</button>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxv66rUh1zYSMSQFIa3g-lOuvPjRReK8zhRnSdDK6NXnk1vnADVjDx4s7Ip_Wccj1LDVg/exec';
-    
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyxxfOopwQPiWbrXfPUNn-f0Wr5Vnt_ZeIg8U9tKPrXd3PdAVBm2BnF2dU-yL5GmxXStQ/exec';
+    let currentSheet = 'daily';
+
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
         showSection('daily', document.querySelector('.nav-btn'));
     };
 
-    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
-    const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Cash"];
-    const indNames = ["Karamjeet", "Sukhwinder", "Jaswinder"];
-    const expTypes = ["Electricity Bill", "Diesel", "Machine Repair", "Tea/Snacks"];
-
-    let currentSheet = 'daily';
-
     function showSection(sheet, btn) {
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
+        const inputPanel = document.getElementById('input-panel');
+        const monthFilter = document.getElementById('monthFilter');
         const descCont = document.getElementById('desc-container');
 
-        if(sheet === 'daily') {
-            let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
-            let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
-            let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            let eOpts = expTypes.map(e => `<option value="${e}">${e}</option>`).join('');
-            descCont.innerHTML = `<select onchange="setDesc(this.value)"><option value="">-- Choose --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><optgroup label="Exp">${eOpts}</optgroup><option value="CUSTOM">--- Custom ---</option></select><input type="text" id="desc" placeholder="Details...">`;
-        } else if(sheet === 'salary') {
-            let pOpts = staffNames.map(s => `<option value="${s}">${s}</option>`).join('');
-            descCont.innerHTML = `<select id="desc">${pOpts}</select>`;
+        if(sheet === 'reports') {
+            inputPanel.style.display = 'none';
+            monthFilter.style.display = 'none';
+            fetchReports();
         } else {
-            descCont.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
+            inputPanel.style.display = 'block';
+            monthFilter.style.display = 'block';
+            setupInputs(sheet, descCont);
+            fetchData();
         }
-        fetchData();
     }
 
-    function setDesc(val) {
-        const d = document.getElementById('desc');
-        if(val === "CUSTOM") { d.value = ""; d.focus(); }
-        else if(val !== "") { d.value = val; }
+    function setupInputs(sheet, container) {
+        if(sheet === 'salary') {
+            container.innerHTML = `<select id="desc"><option value="Akash Munim">Akash Munim</option><option value="Ashok Munim">Ashok Munim</option><option value="Labour">Labour</option></select>`;
+        } else {
+            container.innerHTML = `<input type="text" id="desc" placeholder="Details (Diesel, Repair, etc.)">`;
+        }
+    }
+
+    async function fetchReports() {
+        const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating Yearly Summary...</td></tr>";
+        head.innerHTML = "<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>";
+        
+        try {
+            const res = await fetch(`${scriptURL}?action=getReports`);
+            const data = await res.json();
+            
+            let html = "";
+            for (let m in data.monthly) {
+                let row = data.monthly[m];
+                html += `<tr>
+                    <td><b>${m}</b></td>
+                    <td>₹${row.opening.toLocaleString()}</td>
+                    <td style="color:green;">+₹${row.in.toLocaleString()}</td>
+                    <td style="color:red;">-₹${row.out.toLocaleString()}</td>
+                    <td><b>₹${row.closing.toLocaleString()}</b></td>
+                </tr>`;
+            }
+            body.innerHTML = html;
+            updateDashboard("OVERALL YEARLY REPORT", data.grandTotal, 0, data.grandTotal);
+            document.getElementById('print-subtitle').innerText = "Yearly Summary Report";
+        } catch (e) { body.innerHTML = "Error loading reports."; }
     }
 
     async function fetchData() {
-        const hList = document.getElementById('history-list');
-        hList.innerHTML = "<small>🔄 Syncing...</small>";
-        try {
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}`);
-            const data = await res.json();
-            const fmt = (n) => "₹" + (parseFloat(n) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
-            
-            document.getElementById('total-in').innerText = fmt(data.totalIn);
-            document.getElementById('total-out').innerText = fmt(data.totalOut);
-            document.getElementById('net-balance').innerText = fmt(data.balance);
-            document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
+        const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        const m = document.getElementById('monthFilter').value;
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing...</td></tr>";
+        head.innerHTML = "<tr><th>Date</th><th>Description</th><th>In</th><th>Out</th></tr>";
 
-            let hHTML = data.history.reverse().slice(0,50).map(item => {
-                let cin = parseFloat(item.in) || 0;
-                let cout = parseFloat(item.out) || 0;
-                let d = item.date ? new Date(item.date) : new Date();
-                return `<div class="history-item"><div><span class="date-badge">${d.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}</span><br><b>${item.desc}</b></div><b style="color:${cin>0?'#2e7d32':'#d32f2f'}">${cin>0?'+₹'+cin:'-₹'+cout}</b></div>`;
-            }).join('');
-            hList.innerHTML = hHTML || "No transactions.";
-        } catch (e) { hList.innerHTML = "Error loading data."; }
+        try {
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&month=${m}`);
+            const data = await res.json();
+            
+            updateDashboard(currentSheet.toUpperCase(), data.totalIn, data.totalOut, data.balance);
+            document.getElementById('print-subtitle').innerText = currentSheet.toUpperCase() + " Statement (" + (m || "Full Year") + ")";
+
+            body.innerHTML = data.history.reverse().map(i => `<tr>
+                <td>${new Date(i.date).toLocaleDateString()}</td>
+                <td>${i.desc}</td>
+                <td style="color:green">${i.in > 0 ? '₹'+i.in : '-'}</td>
+                <td style="color:red">${i.out > 0 ? '₹'+i.out : '-'}</td>
+            </tr>`).join('');
+        } catch (e) { body.innerHTML = "Error loading data."; }
+    }
+
+    function updateDashboard(title, tin, tout, bal) {
+        document.getElementById('sheet-title').innerText = title;
+        document.getElementById('total-in').innerText = "₹" + Number(tin).toLocaleString();
+        document.getElementById('total-out').innerText = "₹" + Number(tout).toLocaleString();
+        document.getElementById('net-balance').innerText = "₹" + Number(bal).toLocaleString();
     }
 
     function sendData(type) {
@@ -193,7 +218,7 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const status = document.getElementById('status');
-        if(!d || !a || !dt) return alert("Fill all details!");
+        if(!d || !a) return alert("Please enter details and amount!");
 
         status.innerText = "⏳ Saving...";
         fetch(scriptURL, { 
@@ -203,7 +228,7 @@
         }).then(() => {
             status.innerText = "✓ Saved!";
             document.getElementById('amt').value = '';
-            setTimeout(() => { fetchData(); status.innerText = ""; }, 3000);
+            setTimeout(() => { fetchData(); status.innerText = ""; }, 2000);
         });
     }
 </script>
