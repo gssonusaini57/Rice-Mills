@@ -3,41 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | All Ledgers</title>
+    <title>Krishan Rice Mills | Smart Ledger</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
-        #print-header { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .report-btn { background: #ff9800 !important; color: white !important; border: none !important; }
         .balance-card { max-width: 950px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
         .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
-        .main-wrapper { display: flex; max-width: 1250px; margin: 20px auto; gap: 20px; padding: 0 15px; }
-        .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #input-panel { flex: 0 0 320px; height: fit-content; }
+        .main-wrapper { display: flex; max-width: 1250px; margin: 20px auto; gap: 25px; padding: 0 15px; }
+        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #input-panel { flex: 0 0 350px; height: fit-content; }
         #display-panel { flex: 1; }
+        label { font-weight: bold; font-size: 0.9rem; color: var(--primary); display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f4f7f4; color: var(--primary); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #status { text-align: center; margin-top: 10px; font-weight: bold; }
-        @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
-        @media print { header, .nav-menu, #input-panel, button { display: none !important; } #print-header { display: block !important; } .panel { box-shadow: none; width: 100%; } }
     </style>
 </head>
 <body>
-
-<div id="print-header">
-    <h1>KRISHNA RICE MILLS</h1>
-    <p>Adress: Dudhan Sadhan | Phone: 9478480771</p>
-</div>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
@@ -61,7 +52,7 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
-    <button class="nav-btn report-btn" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
+    <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
 </div>
 
 <div class="main-wrapper">
@@ -69,15 +60,21 @@
         <h3>New Entry</h3>
         <label>Date:</label>
         <input type="date" id="entryDate">
-        <label>Details:</label>
-        <div id="desc-container"></div>
+        
+        <label>Quick Select Name/Type:</label>
+        <div id="dropdown-container"></div>
+        
+        <label>Final Description:</label>
+        <input type="text" id="desc" placeholder="Details yahan type karein...">
+        
         <label>Amount (₹):</label>
         <input type="number" id="amt" placeholder="0.00">
+        
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
-        <div id="status"></div>
+        <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
     </div>
 
     <div id="display-panel" class="panel">
@@ -86,7 +83,6 @@
             <thead><tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr></thead>
             <tbody id="list-body"></tbody>
         </table>
-        <button onclick="window.print()" style="width:100%; margin-top:20px; padding:12px; background:#455a64; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">🖨️ Print Ledger</button>
     </div>
 </div>
 
@@ -94,10 +90,11 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwzBsXNsaoyPutR0P3ohTbSMqTOoBxdMbtTZLjm-V1mLgAcGxRDfBdPh5oNvR1SH_F0/exec';
     let currentSheet = 'daily';
 
+    // Master Lists
     const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
     const bankNames = ["Pankaj Palish", "Shangam Enterprices", "Broken Payment", "Cash"];
-    const indNames = ["Karamjeet", "Sukhwinder", "Jaswinder"];
     const expTypes = ["Electricity Bill", "Diesel", "Machine Repair", "Tea/Snacks", "Misc Exp"];
+    const partnerNames = ["Karamjeet", "Sukhwinder", "Jaswinder"];
 
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
@@ -115,35 +112,49 @@
             fetchReports();
         } else {
             inputPanel.style.display = 'block';
-            setupInputs(sheet);
+            renderDropdown(sheet);
             fetchData();
         }
     }
 
-    function setupInputs(sheet) {
-        const container = document.getElementById('desc-container');
+    function renderDropdown(sheet) {
+        const container = document.getElementById('dropdown-container');
+        let options = '<option value="">-- Select or Type Manual --</option>';
+        
         if(sheet === 'daily') {
-            let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
-            let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
-            let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            let eOpts = expTypes.map(e => `<option value="${e} (Exp)">${e}</option>`).join('');
-            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><optgroup label="Expenditure">${eOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
-        } else if(sheet === 'expenditure') {
-            container.innerHTML = `<select id="desc">${expTypes.map(e => `<option value="${e}">${e}</option>`).join('')}</select>`;
+            options += `<optgroup label="Partners">${partnerNames.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Staff">${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Banks">${bankNames.map(n => `<option value="${n} (Bank)">${n}</option>`).join('')}</optgroup>`;
         } else if(sheet === 'salary') {
-            container.innerHTML = `<select id="desc">${staffNames.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
-        } else if(indNames.includes(sheet.charAt(0).toUpperCase() + sheet.slice(1))) {
-            container.innerHTML = `<input type="text" id="desc" value="Personal Entry" readonly>`;
-        } else {
-            container.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
+            options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
+        } else if(sheet === 'bank') {
+            options += bankNames.map(n => `<option value="${n}">${n}</option>`).join('');
+        } else if(sheet === 'expenditure') {
+            options += expTypes.map(n => `<option value="${n}">${n}</option>`).join('');
+        } else if(partnerNames.map(p=>p.toLowerCase()).includes(sheet.toLowerCase())) {
+            options += `<option value="${sheet.charAt(0).toUpperCase() + sheet.slice(1)} Entry">${sheet.charAt(0).toUpperCase() + sheet.slice(1)} Entry</option>`;
+        }
+
+        options += '<option value="CUSTOM">--- Type Manual / Custom ---</option>';
+        container.innerHTML = `<select id="quickSelect" onchange="handleSelectChange(this.value)">${options}</select>`;
+        
+        // Default text clear
+        document.getElementById('desc').value = "";
+    }
+
+    function handleSelectChange(val) {
+        const descInput = document.getElementById('desc');
+        if(val === "CUSTOM") {
+            descInput.value = "";
+            descInput.focus();
+        } else if(val !== "") {
+            descInput.value = val;
         }
     }
 
-    function setDesc(v) { const d = document.getElementById('desc'); if(v === "CUSTOM") { d.value = ""; d.focus(); } else if(v !== "") { d.value = v; } }
-
     async function fetchData() {
         const body = document.getElementById('list-body');
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
@@ -152,12 +163,12 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             body.innerHTML = data.history.reverse().map(i => `<tr><td>${new Date(i.date).toLocaleDateString('en-IN')}</td><td>${i.desc}</td><td style="color:green">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td><td style="color:red">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td></tr>`).join('');
-        } catch (e) { body.innerHTML = "<tr><td colspan='4'>Error loading. Refresh page.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4'>Error loading.</td></tr>"; }
     }
 
     async function fetchReports() {
         const body = document.getElementById('list-body');
-        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating All Ledgers...</td></tr>";
+        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?action=getReports`);
             const data = await res.json();
@@ -165,7 +176,7 @@
                 let r = data.monthly[m];
                 return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">+₹${r.in.toLocaleString()}</td><td style="color:red">-₹${r.out.toLocaleString()}</td><td><b>₹${r.closing.toLocaleString()}</b></td></tr>`;
             }).join('');
-        } catch (e) { body.innerHTML = "Error loading reports."; }
+        } catch (e) { body.innerHTML = "Error."; }
     }
 
     function sendData(type) {
