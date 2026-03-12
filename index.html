@@ -11,6 +11,7 @@
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .report-btn { background: #ff9800 !important; color: white !important; border: none !important; }
         .balance-card { max-width: 950px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
         .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
@@ -27,13 +28,14 @@
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         #status { text-align: center; margin-top: 10px; font-weight: bold; }
         @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
+        @media print { header, .nav-menu, #input-panel, button { display: none !important; } .panel { box-shadow: none; width: 100%; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <button style="position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Now</button>
+    <button style="position: absolute; right: 15px; top: 20px; background: var(--accent); border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Now</button>
 </header>
 
 <div class="balance-card">
@@ -52,6 +54,7 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
+    <button class="nav-btn report-btn" onclick="showSection('reports', this)">📊 YEARLY REPORT</button>
 </div>
 
 <div class="main-wrapper">
@@ -73,7 +76,7 @@
     <div id="display-panel" class="panel">
         <h3 id="panel-title">History Log</h3>
         <table id="main-table">
-            <thead><tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr></thead>
+            <thead id="table-head"></thead>
             <tbody id="list-body"></tbody>
         </table>
         <button onclick="window.print()" style="width:100%; margin-top:20px; padding:12px; background:#455a64; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">🖨️ Print Ledger</button>
@@ -81,8 +84,7 @@
 </div>
 
 <script>
-    // UPDATED SCRIPT URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz6zKOj5yjq_0sMy8avZaGHWXVIxF-aWVuIOmL9A6bKdWhZ6qnjkeJvXyxB8gmW6jmdOQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxVsm9P8FLiDwq-yxdKdn5LxF8RSTIDhvNfEG8r_OWL0xWRDgTGHp8q2FnrcKUjFaYaIA/exec';
     let currentSheet = 'daily';
 
     const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Satnaryan Rafu", "Malkeet Roti", "Kamlesh Labour", "Kaali Labour"];
@@ -98,8 +100,16 @@
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        setupInputs(sheet);
-        fetchData();
+        const inputPanel = document.getElementById('input-panel');
+        
+        if(sheet === 'reports') {
+            inputPanel.style.display = 'none';
+            fetchReports();
+        } else {
+            inputPanel.style.display = 'block';
+            setupInputs(sheet);
+            fetchData();
+        }
     }
 
     function setupInputs(sheet) {
@@ -108,7 +118,7 @@
             let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
             let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Partners">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
+            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
         } else if(sheet === 'salary') {
             container.innerHTML = `<select id="desc">${staffNames.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
         } else {
@@ -120,15 +130,12 @@
 
     async function fetchData() {
         const body = document.getElementById('list-body');
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Connecting to Google Sheets...</td></tr>";
-        
-        try {
-            // Added CORS proxy check and timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 sec timeout
+        const head = document.getElementById('table-head');
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing History...</td></tr>";
+        head.innerHTML = "<tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr>";
 
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`, { signal: controller.signal });
-            clearTimeout(timeoutId);
+        try {
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
             
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
@@ -136,36 +143,43 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut || 0).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance || 0).toLocaleString();
 
-            if (!data.history || data.history.length === 0) {
-                body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>No data found. Select another tab or check Google Sheets.</td></tr>";
-                return;
-            }
-
             body.innerHTML = data.history.reverse().map(i => `<tr>
                 <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
                 <td>${i.desc || '-'}</td>
                 <td style="color:green">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td>
                 <td style="color:red">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td>
             </tr>`).join('');
-        } catch (e) { 
-            body.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red; padding:20px;'>⚠️ Connection Failed!<br>Please check if you published Apps Script for 'Anyone'.</td></tr>"; 
-        }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Sync Error! Check Apps Script Deployment.</td></tr>"; }
+    }
+
+    async function fetchReports() {
+        const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        body.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Calculating Year-to-Date...</td></tr>";
+        head.innerHTML = "<tr><th>Month</th><th>Opening</th><th>In</th><th>Out</th><th>Closing</th></tr>";
+        
+        try {
+            const res = await fetch(`${scriptURL}?action=getReports&t=${new Date().getTime()}`);
+            const data = await res.json();
+            body.innerHTML = Object.keys(data.monthly).map(m => {
+                let r = data.monthly[m];
+                return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">+₹${r.in.toLocaleString()}</td><td style="color:red">-₹${r.out.toLocaleString()}</td><td><b>₹${r.closing.toLocaleString()}</b></td></tr>`;
+            }).join('');
+            document.getElementById('net-balance').innerText = "₹" + Number(data.grandTotal).toLocaleString();
+        } catch (e) { body.innerHTML = "Error loading report."; }
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a) return alert("Please fill details!");
-        const status = document.getElementById('status');
-        status.innerText = "⏳ Sending to Cloud...";
+        if(!d || !a) return alert("Fill details!");
+        document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })})
         .then(() => {
-            status.innerText = "✓ Saved Successfully!";
+            document.getElementById('status').innerText = "✓ Saved!";
             document.getElementById('amt').value = '';
-            setTimeout(() => { fetchData(); status.innerText = ""; }, 1500);
-        }).catch(() => {
-            status.innerText = "❌ Network Error. Data not saved.";
+            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 1500);
         });
     }
 </script>
