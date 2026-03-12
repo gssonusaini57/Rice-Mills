@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Smart Ledger</title>
+    <title>Krishan Rice Mills | Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
+        header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         .nav-menu { display: flex; justify-content: center; gap: 8px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--primary); transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .balance-card { max-width: 950px; margin: 20px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
         .balance-item div { font-size: 1.5rem; font-weight: bold; margin-top: 5px; }
         .main-wrapper { display: flex; max-width: 1250px; margin: 20px auto; gap: 20px; padding: 0 15px; }
@@ -25,16 +25,15 @@
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #status { text-align: center; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; }
         @media (max-width: 850px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
-        @media print { header, .nav-menu, #input-panel, button { display: none !important; } .balance-card { color: black !important; background: white !important; border: 2px solid #000; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <button style="position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Data</button>
+    <button style="position: absolute; right: 15px; top: 15px; background: var(--accent); border: none; padding: 8px 12px; border-radius: 50px; font-weight: bold; cursor: pointer;" onclick="fetchData()">🔄 Sync Now</button>
 </header>
 
 <div class="balance-card">
@@ -74,14 +73,15 @@
     <div id="display-panel" class="panel">
         <h3 id="panel-title">History Log</h3>
         <table id="main-table">
-            <thead><tr><th>Date</th><th>Description</th><th>In</th><th>Out</th></tr></thead>
+            <thead><tr><th>Date</th><th>Description</th><th>Cash In</th><th>Cash Out</th></tr></thead>
             <tbody id="list-body"></tbody>
         </table>
-        <button onclick="window.print()" style="width:100%; margin-top:20px; padding:12px; background:#455a64; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">🖨️ Print Document</button>
+        <button onclick="window.print()" style="width:100%; margin-top:20px; padding:12px; background:#455a64; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">🖨️ Print Ledger</button>
     </div>
 </div>
 
 <script>
+    // UPDATED SCRIPT URL
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz6zKOj5yjq_0sMy8avZaGHWXVIxF-aWVuIOmL9A6bKdWhZ6qnjkeJvXyxB8gmW6jmdOQ/exec';
     let currentSheet = 'daily';
 
@@ -108,11 +108,11 @@
             let iOpts = indNames.map(n => `<option value="${n}">${n}</option>`).join('');
             let pOpts = staffNames.map(s => `<option value="${s} (Staff)">${s}</option>`).join('');
             let bOpts = bankNames.map(b => `<option value="${b} (Bank)">${b}</option>`).join('');
-            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Individuals">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
+            container.innerHTML = `<select id="quickDesc" onchange="setDesc(this.value)"><option value="">-- Choose Account --</option><optgroup label="Partners">${iOpts}</optgroup><optgroup label="Staff">${pOpts}</optgroup><optgroup label="Banks">${bOpts}</optgroup><option value="CUSTOM">Type Manual...</option></select><input type="text" id="desc" placeholder="Details...">`;
         } else if(sheet === 'salary') {
             container.innerHTML = `<select id="desc">${staffNames.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
         } else {
-            container.innerHTML = `<input type="text" id="desc" placeholder="Enter Details...">`;
+            container.innerHTML = `<input type="text" id="desc" placeholder="Details...">`;
         }
     }
 
@@ -120,9 +120,15 @@
 
     async function fetchData() {
         const body = document.getElementById('list-body');
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing with Google Sheets...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Connecting to Google Sheets...</td></tr>";
+        
         try {
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
+            // Added CORS proxy check and timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 sec timeout
+
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
             const data = await res.json();
             
             document.getElementById('sheet-title').innerText = currentSheet.toUpperCase();
@@ -131,39 +137,35 @@
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance || 0).toLocaleString();
 
             if (!data.history || data.history.length === 0) {
-                body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>No data found. Check your Google Sheet tabs.</td></tr>";
+                body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>No data found. Select another tab or check Google Sheets.</td></tr>";
                 return;
             }
 
-            body.innerHTML = data.history.reverse().map(i => {
-                let cleanDate = "N/A";
-                try {
-                    let d = new Date(i.date);
-                    if(!isNaN(d)) cleanDate = d.toLocaleDateString('en-IN');
-                } catch(e) {}
-                
-                return `<tr>
-                    <td>${cleanDate}</td>
-                    <td>${i.desc || '-'}</td>
-                    <td style="color:green">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td>
-                    <td style="color:red">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td>
-                </tr>`;
-            }).join('');
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Connection Error. Please refresh.</td></tr>"; }
+            body.innerHTML = data.history.reverse().map(i => `<tr>
+                <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
+                <td>${i.desc || '-'}</td>
+                <td style="color:green">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td>
+                <td style="color:red">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td>
+            </tr>`).join('');
+        } catch (e) { 
+            body.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red; padding:20px;'>⚠️ Connection Failed!<br>Please check if you published Apps Script for 'Anyone'.</td></tr>"; 
+        }
     }
 
     function sendData(type) {
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
-        if(!d || !a) return alert("Fill details!");
+        if(!d || !a) return alert("Please fill details!");
         const status = document.getElementById('status');
-        status.innerText = "⏳ Saving Entry...";
+        status.innerText = "⏳ Sending to Cloud...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: d, amount: a, type: type, customDate: dt })})
         .then(() => {
             status.innerText = "✓ Saved Successfully!";
             document.getElementById('amt').value = '';
             setTimeout(() => { fetchData(); status.innerText = ""; }, 1500);
+        }).catch(() => {
+            status.innerText = "❌ Network Error. Data not saved.";
         });
     }
 </script>
