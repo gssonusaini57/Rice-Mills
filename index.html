@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Pro Management</title>
+    <title>Krishan Rice Mills | Final Master</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
@@ -11,7 +11,7 @@
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
-        .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
+        .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; }
 
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
@@ -23,7 +23,7 @@
         #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; }
 
-        .filter-box { background: #e8f5e9; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
+        .filter-box { background: #e8f5e9; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
         .filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
@@ -37,17 +37,15 @@
 
         @media print { 
             .nav-menu, #input-panel, .filter-box, button, .search-box { display: none !important; } 
-            .main-wrapper { display: block; }
-            #display-panel { width: 100%; }
+            .main-wrapper { display: block; margin: 0; }
+            #display-panel { width: 100%; box-shadow: none; }
+            .balance-card { color: black !important; background: white !important; border: 1px solid #000; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>KRISHAN RICE MILLS</h1>
-    <button onclick="runConnectionTest()" style="position:absolute; right:10px; top:15px; background:white; color:var(--primary); border:none; padding:5px 10px; border-radius:5px; font-size:0.7rem; cursor:pointer;">Test Link</button>
-</header>
+<header><h1>KRISHAN RICE MILLS</h1></header>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -68,7 +66,7 @@
     <div class="balance-grid">
         <div>TOTAL IN (+)<span class="bal-val" id="total-in">₹0</span></div>
         <div>TOTAL OUT (-)<span class="bal-val" id="total-out">₹0</span></div>
-        <div style="color:var(--accent)">NET BAL<span class="bal-val" id="net-balance">₹0</span></div>
+        <div style="color:var(--accent)">BALANCE<span class="bal-val" id="net-balance">₹0</span></div>
     </div>
 </div>
 
@@ -78,7 +76,7 @@
         <input type="date" id="entryDate">
         <label>Account Selection:</label>
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details (bk, st, ad shortcuts)..." onkeyup="checkShortcuts(this.value)">
+        <input type="text" id="desc" placeholder="Details (bk, st, ad, ex shortcuts)..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
@@ -91,7 +89,7 @@
         <div class="filter-box">
             <div class="filter-row">
                 <input type="date" id="startDate" style="width:130px; margin:0;">
-                <span>to</span>
+                <span>se</span>
                 <input type="date" id="endDate" style="width:130px; margin:0;">
                 <button onclick="filterByRange()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
                 <button onclick="downloadPDF()" class="nav-btn" style="background:#f44336; color:white;">📄 PDF</button>
@@ -114,7 +112,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx9VRl7iPAFC_szM35acn906p34wPhqRLT5byOeZN7jxyWIN_FaHVyd-4O3D-hMyXZtqA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzfN7TL_OL4eYDly6TfzYeZ3AtMNu4Au5_da8V0wWtPkll_mvaV1CtVF68WbdIv5_8z8g/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -168,7 +166,7 @@
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing Ledger...</td></tr>";
         
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
@@ -178,7 +176,7 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>Connection Error.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>Server Connection Failed.</td></tr>"; }
     }
 
     function renderTable(rows) {
@@ -219,19 +217,11 @@
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
         
-        if(!finalDesc || !a) return alert("Details bharein!");
-        document.getElementById('status').innerText = "Saving...";
+        if(!finalDesc || !a) return alert("Please fill details!");
+        document.getElementById('status').innerText = "⏳ Saving...";
         
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => { location.reload(); });
-    }
-
-    async function runConnectionTest() {
-        try {
-            const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
-            const data = await res.json();
-            if(data.history) alert("✅ Connection Successful!");
-        } catch (e) { alert("❌ Connection Failed. Check URL & Settings."); }
     }
 </script>
 </body>
