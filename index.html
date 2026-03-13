@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Pro Dashboard</title>
+    <title>Krishan Rice Mills | All-in-One Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        header { background: var(--primary); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); }
+        header { background: linear-gradient(135deg, var(--primary), #388e3c); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); }
         .nav-menu { display: flex; justify-content: center; gap: 6px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.85rem; transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; }
         .main-wrapper { display: flex; max-width: 1300px; margin: 15px auto; gap: 20px; padding: 0 15px; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #input-panel { flex: 0 0 330px; height: fit-content; }
+        #input-panel { flex: 0 0 340px; height: fit-content; }
         #display-panel { flex: 1; }
         
-        .help-guide { background: #fffde7; border: 2px dashed #fbc02d; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 0.85rem; }
-        .help-guide b { color: var(--red); }
-        .shortcut-badge { background: #e0e0e0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-weight: bold; color: #333; }
+        /* Help Guide */
+        .help-guide { background: #fffde7; border: 1px dashed #fbc02d; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; }
+        .shortcut-badge { background: #eee; padding: 1px 5px; border-radius: 4px; font-weight: bold; border: 1px solid #ccc; }
 
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 0.85rem; color: var(--primary); display: block; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 0.95rem; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        th { background: #f4f7f4; color: var(--primary); position: sticky; top: 0; }
         @media (max-width: 900px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
     </style>
 </head>
@@ -50,27 +53,29 @@
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
         <div class="help-guide">
-            <strong>🚀 Shortcuts (Daily Cash mein):</strong><br>
-            Space dekar peeche likhein: <br>
-            - <span class="shortcut-badge">bk</span> = Bank Transfer<br>
-            - <span class="shortcut-badge">st</span> = Staff/Salary<br>
-            - <span class="shortcut-badge">dp</span> = Depo Kharcha<br>
-            - <span class="shortcut-badge">tr</span> = Truck Rent<br>
-            - <span class="shortcut-badge">ad</span> = Ashok Depo<br>
-            <b>Example:</b> "Diesel tr"
+            <strong>💡 Shortcut Tips:</strong><br>
+            Manual type karte waqt peeche ye likhein:<br>
+            <span class="shortcut-badge">bk</span> Bank | <span class="shortcut-badge">st</span> Staff | <span class="shortcut-badge">tr</span> Truck | <span class="shortcut-badge">dp</span> Depo
         </div>
 
         <h3>Nayi Entry</h3>
+        <label>Date:</label>
         <input type="date" id="entryDate">
-        <label>Account Select:</label>
+        
+        <label>Select Account (Purane Features):</label>
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details likhein (Shortcuts use karein)...">
-        <input type="number" id="amt" placeholder="Amount ₹">
+        
+        <label>Details / Manual Description:</label>
+        <input type="text" id="desc" placeholder="Details likhein...">
+        
+        <label>Amount (₹):</label>
+        <input type="number" id="amt" placeholder="0.00">
+        
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
-        <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+        <div id="status" style="text-align:center; margin-top:10px; font-weight:bold; color: var(--secondary);"></div>
     </div>
 
     <div id="display-panel" class="panel">
@@ -89,9 +94,10 @@
     let currentSheet = 'daily';
     let masterData = [];
 
-    const partners = ["Karamjeet", "Sukhwinder", "Jaswinder"];
-    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour"];
+    // Saare Purane Lists
     const bankParties = ["Pankaj Palish", "Shangam Enterprices", "Cash Deposit", "Cash Withdraw"];
+    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour", "Satnaryan Rafu"];
+    const partners = ["Karamjeet", "Sukhwinder", "Jaswinder"];
 
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
@@ -109,26 +115,31 @@
     function renderSelector(sheet) {
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Manual Entry --</option>';
+        
         if(sheet === 'daily') {
-            options += partners.map(n => `<option value="${n}">${n}</option>`).join('');
-        } else if(sheet === 'salary') {
-            options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
+            options += `<optgroup label="Bank & Parties">${bankParties.map(n => `<option value="${n} (Bank)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Staff Salary">${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Routing Tabs"><option value="Depo (Depo Exp)">🏢 Depo Exp</option><option value="Truck (Truck)">🚚 Truck Rent</option><option value="Ashok (Ashok Depo)">👤 Ashok Depo</option></optgroup>`;
+            options += `<optgroup label="Partners">${partners.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>`;
         } else if(sheet === 'bank') {
             options += bankParties.map(n => `<option value="${n}">${n}</option>`).join('');
+        } else if(sheet === 'salary') {
+            options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
         }
-        container.innerHTML = `<select id="nameSelector">${options}</select>`;
+        
+        container.innerHTML = `<select id="nameSelector" onchange="document.getElementById('desc').focus()">${options}</select>`;
     }
 
     async function fetchData() {
         document.getElementById('input-panel').style.display = 'block';
         const body = document.getElementById('list-body');
-        body.innerHTML = "Syncing...";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing Data...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
             masterData = data.history.reverse();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "Error loading. Check Script Deployment."; }
+        } catch (e) { body.innerHTML = "Error Load. Refresh karein."; }
     }
 
     function renderTable(dataRows) {
@@ -159,7 +170,8 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
-        if(!finalDesc || !a) return alert("Details bharein!");
+        
+        if(!finalDesc || !a) return alert("Details aur Amount bharein!");
         
         document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
