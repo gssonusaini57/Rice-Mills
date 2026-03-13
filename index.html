@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Pro Dashboard 2026</title>
+    <title>Krishan Rice Mills | Full Management & PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
@@ -22,32 +23,28 @@
         #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; }
 
-        .print-tools { display: flex; gap: 10px; margin-bottom: 15px; background: #e8f5e9; padding: 10px; border-radius: 10px; align-items: center; }
+        .filter-box { background: #e8f5e9; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
+        .filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
-        .total-row { background: #f1f8e9; font-weight: bold; color: var(--primary); }
+        .total-row { background: #f1f8e9; font-weight: bold; border-top: 2px solid var(--primary); }
 
         @media print { 
-            .nav-menu, #input-panel, .print-tools, .search-box, button { display: none !important; } 
-            .main-wrapper { display: block; margin: 0; }
-            #display-panel { width: 100%; box-shadow: none; }
-            .balance-card { color: black !important; background: white !important; border: 1px solid #000; }
-            .bal-val { color: black !important; }
+            .nav-menu, #input-panel, .filter-box, button, .search-box { display: none !important; } 
+            .main-wrapper { display: block; }
+            #display-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>KRISHAN RICE MILLS</h1>
-    <button onclick="runConnectionTest()" style="position:absolute; right:10px; top:15px; background:none; border:1px solid white; color:white; padding:3px 8px; border-radius:5px; font-size:0.7rem; cursor:pointer;">Test Link</button>
-</header>
+<header><h1>KRISHAN RICE MILLS</h1></header>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -58,15 +55,17 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
+    <button class="nav-btn" onclick="showSection('depo_exp', this)">Depo Exp</button>
+    <button class="nav-btn" onclick="showSection('truck_rent', this)">Truck Rent</button>
     <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showSection('reports', this)">📊 REPORTS</button>
 </div>
 
 <div class="balance-card">
-    <h3 id="dash-title" style="margin:0; text-transform:uppercase;">DAILY CASH DASHBOARD</h3>
+    <h3 id="dash-title" style="margin:0;">DAILY LEDGER</h3>
     <div class="balance-grid">
-        <div>IN (+)<span class="bal-val" id="total-in">₹0</span></div>
-        <div>OUT (-)<span class="bal-val" id="total-out">₹0</span></div>
-        <div style="color:var(--accent)">BALANCE<span class="bal-val" id="net-balance">₹0</span></div>
+        <div>TOTAL IN (+)<span class="bal-val" id="total-in">₹0</span></div>
+        <div>TOTAL OUT (-)<span class="bal-val" id="total-out">₹0</span></div>
+        <div style="color:var(--accent)">NET BAL<span class="bal-val" id="net-balance">₹0</span></div>
     </div>
 </div>
 
@@ -74,7 +73,7 @@
     <div id="input-panel" class="panel">
         <h3>Nayi Entry</h3>
         <input type="date" id="entryDate">
-        <label>Select Account:</label>
+        <label>Select Ledger Account:</label>
         <div id="selector-container"></div>
         <input type="text" id="desc" placeholder="Details (bk, st, ad shortcuts)..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
@@ -86,22 +85,26 @@
     </div>
 
     <div id="display-panel" class="panel">
-        <div class="print-tools">
-            <label style="margin:0; font-size:0.8rem;">Day Wise Print:</label>
-            <input type="date" id="filterDate" style="margin:0; width:140px;">
-            <button onclick="filterByDate()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
-            <button onclick="window.print()" class="nav-btn" style="background:#2196f3; color:white;">🖨️ Print</button>
-            <button onclick="fetchData()" class="nav-btn">Reset</button>
+        <div class="filter-box">
+            <div class="filter-row">
+                <input type="date" id="startDate" style="width:130px; margin:0;">
+                <span>to</span>
+                <input type="date" id="endDate" style="width:130px; margin:0;">
+                <button onclick="filterByRange()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
+                <button onclick="downloadPDF()" class="nav-btn" style="background:#f44336; color:white;">📄 PDF</button>
+                <button onclick="window.print()" class="nav-btn" style="background:#2196f3; color:white;">🖨️ Print</button>
+            </div>
         </div>
 
-        <input type="text" id="searchInput" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;" placeholder="History Search..." onkeyup="filterTable()">
-        
-        <div style="max-height: 500px; overflow-y: auto;">
-            <table id="mainTable">
-                <thead id="table-head"></thead>
-                <tbody id="list-body"></tbody>
-                <tfoot id="table-foot"></tfoot>
-            </table>
+        <div id="pdf-content">
+            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS - REPORT</h2>
+            <div style="max-height: 550px; overflow-y: auto;">
+                <table id="mainTable">
+                    <thead id="table-head"></thead>
+                    <tbody id="list-body"></tbody>
+                    <tfoot id="table-foot"></tfoot>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -112,7 +115,10 @@
     let masterData = [];
 
     window.onload = () => {
-        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('entryDate').value = today;
+        document.getElementById('startDate').value = today;
+        document.getElementById('endDate').value = today;
         showSection('daily', document.querySelector('.nav-btn'));
     };
 
@@ -120,44 +126,53 @@
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('dash-title').innerText = sheet.toUpperCase() + " Ledger";
+        document.getElementById('dash-title').innerText = sheet.toUpperCase().replace('_', ' ') + " Ledger";
         renderSelector(sheet);
-        if(sheet === 'reports') fetchReports(); else fetchData();
+        fetchData();
     }
 
     function renderSelector(sheet) {
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Manual Entry --</option>';
         if(sheet === 'daily') {
-            options += `<option value="Ashok (ad)">👤 Ashok Depo</option>
-                        <option value="Bank (bk)">💰 Bank Entry</option>
-                        <option value="Staff (st)">👥 Staff Salary</option>`;
+            options += `
+                <option value="Ashok (ad)">👤 Ashok Depo</option>
+                <option value="Bank (bk)">💰 Bank Entry</option>
+                <option value="Staff (st)">👥 Staff Salary</option>
+                <option value="Karamjeet">👤 Karamjeet</option>
+                <option value="Sukhwinder">👤 Sukhwinder</option>
+                <option value="Jaswinder">👤 Jaswinder</option>
+                <option value="Truck (tr)">🚚 Truck Rent</option>
+                <option value="Depo (dp)">🏢 Depo Exp</option>`;
         }
         container.innerHTML = `<select id="nameSelector">${options}</select>`;
     }
 
     function checkShortcuts(val) {
         const selector = document.getElementById('nameSelector');
-        if(val.toLowerCase() === 'ad') selector.value = "Ashok (ad)";
-        if(val.toLowerCase() === 'bk') selector.value = "Bank (bk)";
-        if(val.toLowerCase() === 'st') selector.value = "Staff (st)";
+        const v = val.toLowerCase();
+        if(v === 'ad') selector.value = "Ashok (ad)";
+        if(v === 'bk') selector.value = "Bank (bk)";
+        if(v === 'st') selector.value = "Staff (st)";
+        if(v === 'tr') selector.value = "Truck (tr)";
+        if(v === 'dp') selector.value = "Depo (dp)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>🔄 Loading Ledger...</td></tr>";
         
-        const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
-        const data = await res.json();
-        masterData = data.history.reverse();
-        
-        document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString();
-        document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
-        document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
-        
-        renderTable(masterData);
+        try {
+            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
+            const data = await res.json();
+            masterData = data.history.reverse();
+            document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString();
+            document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
+            document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
+            renderTable(masterData);
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>⚠️ Error connecting to server.</td></tr>"; }
     }
 
     function renderTable(rows) {
@@ -168,17 +183,27 @@
             sIn += Number(i.in || 0); sOut += Number(i.out || 0);
             return `<tr><td>${new Date(i.date).toLocaleDateString('en-IN')}</td><td>${i.desc}</td><td style="color:green">₹${i.in || '-'}</td><td style="color:red">₹${i.out || '-'}</td></tr>`;
         }).join('');
-        foot.innerHTML = `<tr class="total-row"><td colspan="2">TOTAL SUM</td><td>₹${sIn.toLocaleString()}</td><td>₹${sOut.toLocaleString()}</td></tr>`;
+        foot.innerHTML = `<tr class="total-row"><td colspan="2">GRAND TOTAL</td><td>₹${sIn.toLocaleString()}</td><td>₹${sOut.toLocaleString()}</td></tr>`;
     }
 
-    function filterByDate() {
-        const fDate = document.getElementById('filterDate').value;
-        if(!fDate) return alert("Pehle date chunein!");
+    function filterByRange() {
+        const start = new Date(document.getElementById('startDate').value);
+        const end = new Date(document.getElementById('endDate').value);
         const filtered = masterData.filter(row => {
-            const rowDate = new Date(row.date).toISOString().split('T')[0];
-            return rowDate === fDate;
+            const rowDate = new Date(row.date);
+            return rowDate >= start && rowDate <= end;
         });
         renderTable(filtered);
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('pdf-content');
+        document.getElementById('print-title').style.display = 'block';
+        document.getElementById('print-title').innerText = "Krishan Rice Mills - " + currentSheet.toUpperCase();
+        const opt = { margin: 0.5, filename: currentSheet + '_ledger.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.getElementById('print-title').style.display = 'none';
+        });
     }
 
     function sendData(type) {
@@ -189,28 +214,10 @@
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
         
         if(!finalDesc || !a) return alert("Details bharein!");
-        document.getElementById('status').innerText = "Saving...";
+        document.getElementById('status').innerText = "⏳ Saving...";
         
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => { location.reload(); });
-    }
-
-    async function fetchReports() {
-        const body = document.getElementById('list-body');
-        const head = document.getElementById('table-head');
-        head.innerHTML = `<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>`;
-        const res = await fetch(`${scriptURL}?action=getReports`);
-        const data = await res.json();
-        body.innerHTML = Object.keys(data.monthly).map(m => {
-            let r = data.monthly[m];
-            return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td>₹${r.in}</td><td>₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
-        }).join('');
-    }
-
-    function filterTable() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = masterData.filter(row => row.desc.toLowerCase().includes(query));
-        renderTable(filtered);
     }
 </script>
 </body>
