@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Debug & Management</title>
+    <title>Krishan Rice Mills | All-in-One Dashboard</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; position: relative; border-bottom: 4px solid var(--accent); }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
         .nav-btn.active { background: var(--primary); color: white; }
-
-        /* Debug Box */
-        .debug-box { background: #fff; border: 2px solid var(--red); padding: 15px; border-radius: 10px; margin: 10px auto; max-width: 950px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .debug-line { font-family: monospace; font-size: 0.85rem; padding: 5px; border-bottom: 1px solid #eee; }
 
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
@@ -25,6 +21,8 @@
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         #input-panel { flex: 0 0 330px; }
         #display-panel { flex: 1; }
+
+        .shortcut-guide { background: #fffde7; border: 1px dashed #fbc02d; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 0.75rem; }
         
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
@@ -33,16 +31,17 @@
         
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
-        .total-row { background: #f1f8e9; font-weight: bold; }
+        .total-row { background: #f1f8e9; font-weight: bold; color: var(--primary); }
 
         @media (max-width: 900px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
+        @media print { .nav-menu, #input-panel, .shortcut-guide, button { display: none !important; } .main-wrapper { display: block; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>KRISHAN RICE MILLS</h1>
-    <button onclick="runConnectionTest()" style="position:absolute; right:10px; top:15px; background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-weight:bold; cursor:pointer;">FIX CONNECTION 🛠️</button>
+    <button onclick="runConnectionTest()" style="position:absolute; right:10px; top:15px; background:white; color:var(--primary); border:none; padding:5px 10px; border-radius:5px; font-size:0.7rem; cursor:pointer;">TEST CONNECTION</button>
 </header>
 
 <div class="nav-menu">
@@ -59,41 +58,41 @@
     <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showSection('reports', this)">📊 REPORTS</button>
 </div>
 
-<div id="debugBox" class="debug-box">
-    <div style="font-weight:bold; color:var(--red); border-bottom:2px solid var(--red); margin-bottom:10px; display:flex; justify-content:space-between;">
-        <span>DEBUGGER: CONNECTION ANALYSIS</span>
-        <span onclick="document.getElementById('debugBox').style.display='none'" style="cursor:pointer;">[Close]</span>
-    </div>
-    <div id="debugLog"></div>
+<div id="debugBox" style="display:none; background:#fff; border:1px solid red; margin:10px auto; max-width:950px; padding:10px;">
+    <div id="debugLog" style="font-family:monospace; font-size:0.8rem;"></div>
 </div>
 
 <div class="balance-card">
-    <h3 id="dash-title" style="margin:0; text-transform:uppercase;">DASHBOARD</h3>
+    <h3 id="dash-title" style="margin:0;">DAILY DASHBOARD</h3>
     <div class="balance-grid">
         <div>TOTAL IN<span class="bal-val" id="total-in">₹0</span></div>
         <div>TOTAL OUT<span class="bal-val" id="total-out">₹0</span></div>
-        <div style="color:var(--accent)">NET BAL<span class="bal-val" id="net-balance">₹0</span></div>
+        <div style="color:var(--accent)">BALANCE<span class="bal-val" id="net-balance">₹0</span></div>
     </div>
 </div>
 
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
+        <div class="shortcut-guide">
+            <strong>⌨️ Keys:</strong> <b>ad</b> (Ashok) | <b>bk</b> (Bank) | <b>st</b> (Staff) | <b>tr</b> (Truck)
+        </div>
         <h3>Nayi Entry</h3>
         <input type="date" id="entryDate">
+        <label>Account Selection:</label>
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details (bk, st, ad shortcuts)...">
+        <input type="text" id="desc" placeholder="Details likhein..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
         <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
-        <button onclick="window.print()" class="btn-in" style="background:#2196f3; width:100%; margin-top:15px;">🖨️ Print Report</button>
+        <button onclick="window.print()" class="btn-in" style="background:#2196f3; width:100%; margin-top:15px;">🖨️ PRINT REPORT</button>
     </div>
 
     <div id="display-panel" class="panel">
         <input type="text" id="searchInput" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="Search history..." onkeyup="filterTable()">
-        <div style="max-height: 500px; overflow-y: auto;">
+        <div style="max-height: 550px; overflow-y: auto;">
             <table id="mainTable">
                 <thead id="table-head"></thead>
                 <tbody id="list-body"></tbody>
@@ -104,49 +103,24 @@
 </div>
 
 <script>
-    // UPDATED SCRIPT URL
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxsY6hdkTgbMJP2rRaNtpstquDC2nYdoqFGPT9R5auJxZe6_gLyLnNKttciiEMc9ae_-w/exec';
     
     let currentSheet = 'daily';
     let masterData = [];
+
+    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour"];
+    const partners = ["Karamjeet", "Sukhwinder", "Jaswinder"];
 
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
         showSection('daily', document.querySelector('.nav-btn'));
     };
 
-    // ADVANCED DEBUGGER
-    async function runConnectionTest() {
-        const dBox = document.getElementById('debugBox');
-        const dLog = document.getElementById('debugLog');
-        dBox.style.display = 'block';
-        dLog.innerHTML = "<div class='debug-line'>Checking Script URL...</div>";
-        
-        try {
-            const start = Date.now();
-            const res = await fetch(`${scriptURL}?sheet=daily&t=${start}`);
-            const data = await res.json();
-            const timeTaken = Date.now() - start;
-
-            if(data.history) {
-                dLog.innerHTML += `<div class='debug-line' style='color:green'>✅ CONNECTED! (Ping: ${timeTaken}ms)</div>`;
-                dLog.innerHTML += `<div class='debug-line'>✅ Data fetch successful from 'daily' sheet.</div>`;
-            } else {
-                dLog.innerHTML += `<div class='debug-line' style='color:orange'>⚠️ Script connected but returned no data. Check sheet names.</div>`;
-            }
-        } catch (e) {
-            dLog.innerHTML += `<div class='debug-line' style='color:red'>❌ CONNECTION FAILED!</div>`;
-            dLog.innerHTML += `<div class='debug-line'>Reason: Browser blocked the request or URL is invalid.</div>`;
-            dLog.innerHTML += `<div class='debug-line'><b>Fix 1:</b> Apps Script mein Deploy > New Deployment karein.</div>`;
-            dLog.innerHTML += `<div class='debug-line'><b>Fix 2:</b> Access ko 'Anyone' par set karein.</div>`;
-        }
-    }
-
     function showSection(sheet, btn) {
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('dash-title').innerText = sheet.toUpperCase() + " Dashboard";
+        document.getElementById('dash-title').innerText = sheet.toUpperCase() + " LEDGER";
         renderSelector(sheet);
         if(sheet === 'reports') fetchReports(); else fetchData();
     }
@@ -155,16 +129,28 @@
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Manual Entry --</option>';
         if(sheet === 'daily') {
-            options += `<option value="Ashok (ad)">👤 Ashok Depo</option><option value="Bank (bk)">💰 Bank Entry</option><option value="Salary (st)">👥 Staff Entry</option>`;
+            options += `<option value="Ashok (ad)">👤 Ashok Depo</option>
+                        <option value="Bank (bk)">💰 Bank Entry</option>
+                        <option value="Staff (st)">👥 Staff Salary</option>
+                        ${partners.map(p => `<option value="${p}">${p}</option>`).join('')}`;
+        } else if(sheet === 'salary') {
+            options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
         }
         container.innerHTML = `<select id="nameSelector">${options}</select>`;
+    }
+
+    function checkShortcuts(val) {
+        const selector = document.getElementById('nameSelector');
+        if(val.toLowerCase() === 'ad') selector.value = "Ashok (ad)";
+        if(val.toLowerCase() === 'bk') selector.value = "Bank (bk)";
+        if(val.toLowerCase() === 'st') selector.value = "Staff (st)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>Syncing Data...</td></tr>";
         
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
@@ -174,7 +160,7 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>⚠️ Connection Error. Click 'FIX CONNECTION' upar.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>⚠️ Connection Error!</td></tr>"; }
     }
 
     function renderTable(dataRows) {
@@ -185,7 +171,19 @@
             sIn += Number(i.in || 0); sOut += Number(i.out || 0);
             return `<tr><td>${new Date(i.date).toLocaleDateString('en-IN')}</td><td>${i.desc}</td><td style="color:green">₹${i.in || '-'}</td><td style="color:red">₹${i.out || '-'}</td></tr>`;
         }).join('');
-        foot.innerHTML = `<tr class="total-row"><td colspan="2">TOTAL</td><td>₹${sIn.toLocaleString()}</td><td>₹${sOut.toLocaleString()}</td></tr>`;
+        foot.innerHTML = `<tr class="total-row"><td colspan="2">TOTAL SUM</td><td>₹${sIn.toLocaleString()}</td><td>₹${sOut.toLocaleString()}</td></tr>`;
+    }
+
+    async function fetchReports() {
+        const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        head.innerHTML = `<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>`;
+        const res = await fetch(`${scriptURL}?action=getReports`);
+        const data = await res.json();
+        body.innerHTML = Object.keys(data.monthly).map(m => {
+            let r = data.monthly[m];
+            return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td>₹${r.in}</td><td>₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
+        }).join('');
     }
 
     function sendData(type) {
@@ -194,10 +192,28 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
-        if(!finalDesc || !a) return alert("Fill data!");
+        
+        if(!finalDesc || !a) return alert("Details bharein!");
         document.getElementById('status').innerText = "Saving...";
+        
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
-        .then(() => { location.reload(); });
+        .then(() => {
+            document.getElementById('status').innerText = "✓ Saved!";
+            setTimeout(() => { location.reload(); }, 1000);
+        });
+    }
+
+    async function runConnectionTest() {
+        const dBox = document.getElementById('debugBox');
+        dBox.style.display = 'block';
+        const dLog = document.getElementById('debugLog');
+        dLog.innerHTML = "Testing Connection...";
+        try {
+            const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
+            const data = await res.json();
+            if(data.history) dLog.innerHTML = "<span style='color:green'>✅ Connected! Sab sahi hai.</span>";
+            else dLog.innerHTML = "<span style='color:red'>❌ Script connected but data error. Check Sheet Names.</span>";
+        } catch (e) { dLog.innerHTML = "<span style='color:red'>❌ Connection Failed. Make sure 'Anyone' access is ON.</span>"; }
     }
 
     function filterTable() {
