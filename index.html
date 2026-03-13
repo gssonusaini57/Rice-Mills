@@ -62,9 +62,9 @@
         <h3>Nayi Entry</h3>
         <label>Date:</label>
         <input type="date" id="entryDate">
-        <label>Select Account (Automatic Transfer):</label>
+        <label>Select Account (Auto-Transfer):</label>
         <div id="selector-container"></div>
-        <label>Manual Details:</label>
+        <label>Manual Detail:</label>
         <input type="text" id="desc" placeholder="Details likhein...">
         <label>Amount (₹):</label>
         <input type="number" id="amt" placeholder="0.00">
@@ -87,7 +87,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbywVny9FEdffuSJLzJhZ65I298TFCjbO9GR6p5FtQKs9ZfP6gsEZ3CyuXIDJOonKgWvgg/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwEJfBZRtc6P3vEvj9p1IyjITImgVqhHHKFfSLEiSrYAfUoMNf6r5e-svprfzHBUoQXzw/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -112,20 +112,10 @@
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Sab Khali (Manual) --</option>';
         if(sheet === 'daily') {
-            options += `<optgroup label="Bank & Parties">
-                            ${bankParties.map(n => `<option value="${n} (Bank)">${n}</option>`).join('')}
-                        </optgroup>`;
-            options += `<optgroup label="Staff (Salary)">
-                            ${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}
-                        </optgroup>`;
-            options += `<optgroup label="Routing Tabs">
-                            <option value="Depo Kharcha (Depo Exp)">🏢 Depo Exp</option>
-                            <option value="Truck Rent (Truck)">🚚 Truck Rent</option>
-                            <option value="Ashok (Ashok Depo)">👤 Ashok Depo</option>
-                        </optgroup>`;
-            options += `<optgroup label="Partners">
-                            ${partners.map(n => `<option value="${n}">${n}</option>`).join('')}
-                        </optgroup>`;
+            options += `<optgroup label="Bank & Parties">${bankParties.map(n => `<option value="${n} (Bank)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Staff Salary">${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Routing Tabs"><option value="Depo (Depo Exp)">🏢 Depo Exp</option><option value="Truck (Truck)">🚚 Truck Rent</option><option value="Ashok (Ashok Depo)">👤 Ashok Depo</option></optgroup>`;
+            options += `<optgroup label="Partners">${partners.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>`;
         } else if(sheet === 'bank') {
             options += bankParties.map(n => `<option value="${n}">${n}</option>`).join('');
         } else if(sheet === 'salary') {
@@ -148,7 +138,7 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4'>Error Load. Check Apps Script Deployment.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4'>Error Load. Check Apps Script Settings.</td></tr>"; }
     }
 
     function renderTable(dataRows) {
@@ -156,8 +146,8 @@
         body.innerHTML = dataRows.map(i => `<tr>
             <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
             <td>${i.desc}</td>
-            <td style="color:green; font-weight:bold;">${i.in > 0 ? '₹'+Number(i.in).toLocaleString() : '-'}</td>
-            <td style="color:red; font-weight:bold;">${i.out > 0 ? '₹'+Number(i.out).toLocaleString() : '-'}</td>
+            <td style="color:green; font-weight:bold;">${i.in > 0 ? '₹' + Number(i.in).toLocaleString() : '-'}</td>
+            <td style="color:red; font-weight:bold;">${i.out > 0 ? '₹' + Number(i.out).toLocaleString() : '-'}</td>
         </tr>`).join('');
     }
 
@@ -187,9 +177,7 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
-        
-        if(!finalDesc || !a) return alert("Details bharein!");
-        
+        if(!finalDesc || !a) return alert("Details and Amount missing!");
         document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => {
