@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Master Ledger</title>
+    <title>Krishan Rice Mills | Smart Management</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
@@ -11,6 +11,7 @@
         .nav-menu { display: flex; justify-content: center; gap: 6px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.85rem; transition: 0.3s; }
         .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .report-btn { background: #ff9800 !important; color: white !important; border: none !important; }
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; }
         .main-wrapper { display: flex; max-width: 1300px; margin: 15px auto; gap: 20px; padding: 0 15px; }
@@ -19,13 +20,13 @@
         #display-panel { flex: 1; }
         .search-box { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         label { font-weight: bold; font-size: 0.9rem; color: var(--primary); display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        th { background: #f4f7f4; color: var(--primary); }
+        th { background: #f4f7f4; color: var(--primary); position: sticky; top: 0; }
     </style>
 </head>
 <body>
@@ -43,6 +44,7 @@
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
+    <button class="nav-btn report-btn" onclick="showSection('reports', this)">📊 REPORTS</button>
 </div>
 
 <div class="balance-card">
@@ -59,9 +61,9 @@
         <h3>Nayi Entry</h3>
         <label>Date:</label>
         <input type="date" id="entryDate">
-        <label>Account Selection (Automatic Routing):</label>
+        <label>Select Name/Account:</label>
         <div id="selector-container"></div>
-        <label>Manual Details / Description:</label>
+        <label>Manual Detail / Description:</label>
         <input type="text" id="desc" placeholder="Details yahan likhein...">
         <label>Amount (₹):</label>
         <input type="number" id="amt" placeholder="0.00">
@@ -73,7 +75,7 @@
     </div>
 
     <div id="display-panel" class="panel">
-        <input type="text" id="searchInput" class="search-box" placeholder="Search history..." onkeyup="filterTable()">
+        <input type="text" id="searchInput" class="search-box" placeholder="Pichli entries search karein..." onkeyup="filterTable()">
         <div style="max-height: 550px; overflow-y: auto;">
             <table id="mainTable">
                 <thead><tr><th>Date</th><th>Description</th><th>In</th><th>Out</th></tr></thead>
@@ -88,7 +90,9 @@
     let currentSheet = 'daily';
     let masterData = [];
 
-    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour", "Satnaryan Rafu", "Pankaj Palish", "Shangam Enterprices"];
+    // Categorized Lists
+    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour", "Satnaryan Rafu"];
+    const bankPartyNames = ["Pankaj Palish", "Shangam Enterprices", "Cash Deposit", "Cash Withdraw", "Broken Payment"];
     const partners = ["Karamjeet", "Sukhwinder", "Jaswinder"];
 
     window.onload = () => {
@@ -101,31 +105,22 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderSelector(sheet);
-        fetchData();
+        if(sheet === 'reports') fetchReports(); else fetchData();
     }
 
     function renderSelector(sheet) {
         const container = document.getElementById('selector-container');
-        let options = '<option value="">-- Manual Entry --</option>';
+        let options = '<option value="">-- Sab Khali (Manual) --</option>';
         
         if(sheet === 'daily') {
-            options += `<optgroup label="🏦 Bank (Auto-update Bank Tab)">
-                            <option value="Cash Deposit (Bank)">💰 Cash Deposit to Bank</option>
-                            <option value="Cash Withdraw (Bank)">🏦 Cash Withdraw from Bank</option>
-                        </optgroup>`;
-            options += `<optgroup label="👥 Staff (Auto-update Staff Tab)">
-                            ${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}
-                        </optgroup>`;
-            options += `<optgroup label="🏢 Factory Routing">
-                            <option value="Depo (Depo Exp)">🏢 Depo Expenditure</option>
-                            <option value="Truck (Truck)">🚚 Truck Rent Payment</option>
-                            <option value="Ashok (Ashok Depo)">👤 Ashok Depo Entry</option>
-                        </optgroup>`;
+            options += `<optgroup label="Bank & Parties">${bankPartyNames.map(n => `<option value="${n} (Bank)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Staff">${staffNames.map(n => `<option value="${n} (Staff)">${n}</option>`).join('')}</optgroup>`;
+            options += `<optgroup label="Routing Tabs"><option value="Depo (Depo Exp)">🏢 Depo Exp</option><option value="Truck (Truck)">🚚 Truck Rent</option><option value="Ashok (Ashok Depo)">👤 Ashok Depo</option></optgroup>`;
             options += `<optgroup label="Partners">${partners.map(n => `<option value="${n}">${n}</option>`).join('')}</optgroup>`;
         } else if(sheet === 'salary') {
             options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
         } else if(sheet === 'bank') {
-            options += `<option value="Cash Deposit">Cash Deposit</option><option value="Cash Withdraw">Cash Withdraw</option>`;
+            options += bankPartyNames.map(n => `<option value="${n}">${n}</option>`).join('');
         }
         
         container.innerHTML = `<select id="nameSelector" onchange="document.getElementById('desc').focus()">${options}</select>`;
@@ -134,6 +129,8 @@
 
     async function fetchData() {
         const body = document.getElementById('list-body');
+        const inputPanel = document.getElementById('input-panel');
+        inputPanel.style.display = 'block';
         body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Syncing...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
@@ -144,7 +141,7 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4'>Error loading.</td></tr>"; }
+        } catch (e) { body.innerHTML = "Error loading."; }
     }
 
     function renderTable(dataRows) {
@@ -163,15 +160,25 @@
         renderTable(filtered);
     }
 
+    async function fetchReports() {
+        document.getElementById('input-panel').style.display = 'none';
+        const body = document.getElementById('list-body');
+        body.innerHTML = "🔄 Calculating Reports...";
+        const res = await fetch(`${scriptURL}?action=getReports`);
+        const data = await res.json();
+        body.innerHTML = Object.keys(data.monthly).map(m => {
+            let r = data.monthly[m];
+            return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">+₹${r.in.toLocaleString()}</td><td style="color:red">-₹${r.out.toLocaleString()}</td><td><b>₹${r.closing.toLocaleString()}</b></td></tr>`;
+        }).join('');
+    }
+
     function sendData(type) {
         const name = document.getElementById('nameSelector').value;
         const customDesc = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
-        
-        if(!finalDesc || !a) return alert("Detail aur Amount bharein!");
-        
+        if(!finalDesc || !a) return alert("Details bharein!");
         document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => {
