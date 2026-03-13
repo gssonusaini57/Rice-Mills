@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Debug System</title>
+    <title>Krishan Rice Mills | Pro Management</title>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
         .nav-btn.active { background: var(--primary); color: white; }
-        
-        /* Debug Mode Styles */
-        .debug-box { background: #fee; border: 1px solid #d32f2f; padding: 15px; border-radius: 10px; margin: 10px auto; max-width: 950px; display: none; }
-        .debug-title { color: #d32f2f; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .debug-item { font-family: monospace; font-size: 0.85rem; margin-bottom: 3px; }
-        .status-ok { color: green; font-weight: bold; }
-        .status-fail { color: red; font-weight: bold; }
+
+        /* Dashboard Styles */
+        .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
+        .bal-val { font-size: 1.2rem; font-weight: bold; display: block; }
+
+        /* Print Styles */
+        @media print {
+            .nav-menu, #input-panel, .btn-print, .search-box, header button { display: none !important; }
+            .main-wrapper { display: block !important; }
+            #display-panel { width: 100% !important; box-shadow: none !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #000 !important; padding: 8px !important; }
+            .balance-card { border: 1px solid #000; color: black !important; background: none !important; }
+            .bal-val { color: black !important; }
+        }
 
         .main-wrapper { display: flex; max-width: 1300px; margin: 10px auto; gap: 20px; padding: 0 15px; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #input-panel { flex: 0 0 340px; height: fit-content; }
+        #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; }
         
-        .help-guide { background: #fffde7; border: 1px dashed #fbc02d; padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 0.8rem; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; }
         .btn-group { display: flex; gap: 10px; }
-        .btn-in { flex: 1; background: var(--secondary); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .btn-out { flex: 1; background: var(--red); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-in { flex: 1; background: var(--secondary); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-out { flex: 1; background: var(--red); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .total-row { background: #f1f8e9; font-weight: bold; color: var(--primary); }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
-        @media (max-width: 900px) { .main-wrapper { flex-direction: column; } #input-panel { width: 100%; } }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        th { background: #f4f7f4; color: var(--primary); }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>KRISHAN RICE MILLS</h1>
-    <button onclick="runConnectionTest()" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:2px 10px; cursor:pointer; font-size:0.7rem;">Run Connection Test</button>
-</header>
+<header><h1>KRISHAN RICE MILLS</h1></header>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -55,88 +63,58 @@
     <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showSection('reports', this)">📊 REPORTS</button>
 </div>
 
-<div id="debugBox" class="debug-box">
-    <div class="debug-title">SYSTEM DEBUG LOG <span onclick="document.getElementById('debugBox').style.display='none'" style="cursor:pointer;">[Close]</span></div>
-    <div id="debugLog"></div>
+<div class="balance-card">
+    <h3 id="dash-title" style="margin:0; text-transform:uppercase;">DAILY CASH DASHBOARD</h3>
+    <div class="balance-grid">
+        <div>IN (+)<span class="bal-val" id="total-in">₹0</span></div>
+        <div>OUT (-)<span class="bal-val" id="total-out">₹0</span></div>
+        <div style="color:var(--accent)">NET BAL<span class="bal-val" id="net-balance">₹0</span></div>
+    </div>
 </div>
 
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
-        <div class="help-guide">
-            <strong>🚀 Shortcuts:</strong> <span style="background:#eee;padding:1px 3px;">bk</span> Bank | <span style="background:#eee;padding:1px 3px;">st</span> Staff | <span style="background:#eee;padding:1px 3px;">tr</span> Truck | <span style="background:#eee;padding:1px 3px;">dp</span> Depo
-        </div>
         <h3>Nayi Entry</h3>
-        <label>Date:</label>
         <input type="date" id="entryDate">
-        <label>Account:</label>
+        <label>Select Account:</label>
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details (e.g. Chaye bk)...">
+        <input type="text" id="desc" placeholder="Details (bk, st shortcuts)...">
         <input type="number" id="amt" placeholder="Amount ₹">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
             <button class="btn-out" onclick="sendData('OUT')">CASH OUT</button>
         </div>
         <div id="status" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+        <button onclick="window.print()" class="btn-in" style="background:#2196f3; width:100%; margin-top:15px;">🖨️ Print Ledger</button>
     </div>
 
     <div id="display-panel" class="panel">
-        <input type="text" id="searchInput" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;" placeholder="Search history..." onkeyup="filterTable()">
-        <div style="max-height: 500px; overflow-y: auto;">
+        <input type="text" id="searchInput" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="Search history..." onkeyup="filterTable()">
+        <div style="max-height: 600px; overflow-y: auto;">
             <table id="mainTable">
-                <thead><tr><th>Date</th><th>Description</th><th>In</th><th>Out</th></tr></thead>
+                <thead id="table-head"></thead>
                 <tbody id="list-body"></tbody>
+                <tfoot id="table-foot"></tfoot>
             </table>
         </div>
     </div>
 </div>
 
 <script>
-    // ENTER YOUR LATEST URL HERE
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxsY6hdkTgbMJP2rRaNtpstquDC2nYdoqFGPT9R5auJxZe6_gLyLnNKttciiEMc9ae_-w/exec';
-    
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxsY6hdkTgbMINDstquDC2nYdoqFGPT9R5auJxZe6_gLyLnNKttciiEMc9ae_-w/exec';
     let currentSheet = 'daily';
     let masterData = [];
-
-    const partners = ["Karamjeet", "Sukhwinder", "Jaswinder"];
-    const staffNames = ["Akash Munim", "Ashok Munim", "Akhil Foreman", "Malkeet Roti", "Kaali Labour", "Kamlesh Labour"];
-    const bankParties = ["Pankaj Palish", "Shangam Enterprices", "Cash Deposit", "Cash Withdraw"];
 
     window.onload = () => {
         document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
         showSection('daily', document.querySelector('.nav-btn'));
     };
 
-    // DEBUG FUNCTION
-    async function runConnectionTest() {
-        const dBox = document.getElementById('debugBox');
-        const dLog = document.getElementById('debugLog');
-        dBox.style.display = 'block';
-        dLog.innerHTML = "⏳ Starting Connection Test...";
-
-        try {
-            dLog.innerHTML += `<div class="debug-item">Testing URL... </div>`;
-            const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
-            const data = await res.json();
-            
-            if(data.history) {
-                dLog.innerHTML += `<div class="debug-item">Status: <span class="status-ok">CONNECTED ✅</span></div>`;
-                dLog.innerHTML += `<div class="debug-item">Checking Current Tab (${currentSheet}): <span class="status-ok">FOUND ✅</span></div>`;
-                dLog.innerHTML += `<div class="debug-item">Data Rows Found: ${data.history.length}</div>`;
-            } else if (data.error) {
-                dLog.innerHTML += `<div class="debug-item">Status: <span class="status-fail">FAILED ❌</span></div>`;
-                dLog.innerHTML += `<div class="debug-item">Error: ${data.error}</div>`;
-                dLog.innerHTML += `<div class="debug-item">Tip: Apni Sheet mein iss tab ka naam check karein.</div>`;
-            }
-        } catch (e) {
-            dLog.innerHTML += `<div class="debug-item">Status: <span class="status-fail">CONNECTION BLOCKED ❌</span></div>`;
-            dLog.innerHTML += `<div class="debug-item">Tip: Check if 'Who has access' is set to 'Anyone' in Apps Script Deployment.</div>`;
-        }
-    }
-
     function showSection(sheet, btn) {
         currentSheet = sheet;
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        document.getElementById('dash-title').innerText = sheet + " Dashboard";
         renderSelector(sheet);
         if(sheet === 'reports') fetchReports(); else fetchData();
     }
@@ -145,38 +123,70 @@
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Manual --</option>';
         if(sheet === 'daily') {
-            options += bankParties.map(n => `<option value="${n} (bk)">${n}</option>`).join('');
-            options += staffNames.map(n => `<option value="${n} (st)">${n}</option>`).join('');
-            options += partners.map(n => `<option value="${n}">${n}</option>`).join('');
-        } else if(sheet === 'salary') {
-            options += staffNames.map(n => `<option value="${n}">${n}</option>`).join('');
-        } else if(sheet === 'bank') {
-            options += bankParties.map(n => `<option value="${n}">${n}</option>`).join('');
+            options += `<option value="Ashok (ad)">👤 Ashok Depo</option>
+                        <option value="Cash Deposit (bk)">💰 Bank Deposit</option>
+                        <option value="Cash Withdraw (bk)">🏦 Bank Withdraw</option>
+                        <option value="Salary (st)">👥 Staff Salary</option>`;
         }
         container.innerHTML = `<select id="nameSelector">${options}</select>`;
     }
 
     async function fetchData() {
-        document.getElementById('input-panel').style.display = 'block';
         const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
         body.innerHTML = "Syncing...";
-        try {
-            const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
-            const data = await res.json();
-            if(data.error) throw new Error(data.error);
-            masterData = data.history.reverse();
-            renderTable(masterData);
-        } catch (e) { body.innerHTML = `<span style="color:red">Error Loading Tab: ${currentSheet}. Run Debug Test upar.</span>`; }
+        
+        const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
+        const data = await res.json();
+        
+        masterData = data.history.reverse();
+        document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString();
+        document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
+        document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
+        
+        renderTable(masterData);
     }
 
     function renderTable(dataRows) {
         const body = document.getElementById('list-body');
-        body.innerHTML = dataRows.map(i => `<tr>
-            <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
-            <td>${i.desc}</td>
-            <td style="color:green">₹${i.in}</td>
-            <td style="color:red">₹${i.out}</td>
-        </tr>`).join('');
+        const foot = document.getElementById('table-foot');
+        let sumIn = 0, sumOut = 0;
+
+        body.innerHTML = dataRows.map(i => {
+            sumIn += Number(i.in || 0);
+            sumOut += Number(i.out || 0);
+            return `<tr>
+                <td>${new Date(i.date).toLocaleDateString('en-IN')}</td>
+                <td>${i.desc}</td>
+                <td style="color:green">₹${i.in || '-'}</td>
+                <td style="color:red">₹${i.out || '-'}</td>
+            </tr>`;
+        }).join('');
+
+        foot.innerHTML = `<tr class="total-row">
+            <td colspan="2">GRAND TOTAL</td>
+            <td>₹${sumIn.toLocaleString()}</td>
+            <td>₹${sumOut.toLocaleString()}</td>
+        </tr>`;
+    }
+
+    async function fetchReports() {
+        document.getElementById('input-panel').style.display = 'block'; // Keep print button visible
+        const body = document.getElementById('list-body');
+        const head = document.getElementById('table-head');
+        const foot = document.getElementById('table-foot');
+        head.innerHTML = `<tr><th>Month</th><th>Opening Balance</th><th>Total In (+)</th><th>Total Out (-)</th><th>Closing</th></tr>`;
+        foot.innerHTML = "";
+        body.innerHTML = "🔄 Calculating...";
+        
+        const res = await fetch(`${scriptURL}?action=getReports`);
+        const data = await res.json();
+        
+        body.innerHTML = Object.keys(data.monthly).map(m => {
+            let r = data.monthly[m];
+            return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td style="color:green">₹${r.in}</td><td style="color:red">₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
+        }).join('');
     }
 
     function sendData(type) {
@@ -185,15 +195,13 @@
         const a = document.getElementById('amt').value;
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
+        if(!finalDesc || !a) return alert("Details bharein!");
         
-        if(!finalDesc || !a) return alert("Fill data!");
         document.getElementById('status').innerText = "Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => {
             document.getElementById('status').innerText = "✓ Saved!";
-            document.getElementById('desc').value = '';
-            document.getElementById('amt').value = '';
-            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 1500);
+            setTimeout(() => { fetchData(); document.getElementById('status').innerText = ""; }, 1000);
         });
     }
 
@@ -201,18 +209,6 @@
         const query = document.getElementById('searchInput').value.toLowerCase();
         const filtered = masterData.filter(row => row.desc.toLowerCase().includes(query));
         renderTable(filtered);
-    }
-
-    async function fetchReports() {
-        document.getElementById('input-panel').style.display = 'none';
-        const body = document.getElementById('list-body');
-        body.innerHTML = "🔄 Calculating...";
-        const res = await fetch(`${scriptURL}?action=getReports`);
-        const data = await res.json();
-        body.innerHTML = Object.keys(data.monthly).map(m => {
-            let r = data.monthly[m];
-            return `<tr><td><b>${m}</b></td><td>₹${r.opening}</td><td style="color:green">+₹${r.in}</td><td style="color:red">-₹${r.out}</td><td><b>₹${r.closing}</b></td></tr>`;
-        }).join('');
     }
 </script>
 </body>
