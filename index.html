@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Final Master</title>
+    <title>KRM Ledger Pro 2026 | Krishan Rice Mills</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; transition: 0.3s; }
@@ -16,7 +16,7 @@
 
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
-        .bal-val { font-size: 1.2rem; font-weight: bold; display: block; }
+        .bal-val { font-size: 1.2rem; font-weight: bold; display: block; color: var(--accent); }
 
         .main-wrapper { display: flex; max-width: 1300px; margin: 10px auto; gap: 20px; padding: 0 15px; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -24,8 +24,6 @@
         #display-panel { flex: 1; }
 
         .filter-box { background: #e8f5e9; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
-        .filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
@@ -36,16 +34,18 @@
         .total-row { background: #f1f8e9; font-weight: bold; border-top: 2px solid var(--primary); }
 
         @media print { 
-            .nav-menu, #input-panel, .filter-box, button, .search-box { display: none !important; } 
-            .main-wrapper { display: block; margin: 0; }
-            #display-panel { width: 100%; box-shadow: none; }
-            .balance-card { color: black !important; background: white !important; border: 1px solid #000; }
+            .nav-menu, #input-panel, .filter-box, button { display: none !important; } 
+            .main-wrapper { display: block; }
+            #display-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<header><h1>KRISHAN RICE MILLS</h1></header>
+<header>
+    <h1>KRISHAN RICE MILLS</h1>
+    <small>Final Master Version 2026</small>
+</header>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -58,7 +58,7 @@
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
     <button class="nav-btn" onclick="showSection('depo_exp', this)">Depo Exp</button>
     <button class="nav-btn" onclick="showSection('truck_rent', this)">Truck Rent</button>
-    <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showSection('reports', this)">📊 REPORTS</button>
+    <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showReports(this)">📊 REPORTS</button>
 </div>
 
 <div class="balance-card">
@@ -66,7 +66,7 @@
     <div class="balance-grid">
         <div>TOTAL IN (+)<span class="bal-val" id="total-in">₹0</span></div>
         <div>TOTAL OUT (-)<span class="bal-val" id="total-out">₹0</span></div>
-        <div style="color:var(--accent)">BALANCE<span class="bal-val" id="net-balance">₹0</span></div>
+        <div>NET BALANCE<span class="bal-val" id="net-balance">₹0</span></div>
     </div>
 </div>
 
@@ -86,10 +86,10 @@
     </div>
 
     <div id="display-panel" class="panel">
-        <div class="filter-box">
-            <div class="filter-row">
+        <div id="filter-area" class="filter-box">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <input type="date" id="startDate" style="width:130px; margin:0;">
-                <span>se</span>
+                <span>to</span>
                 <input type="date" id="endDate" style="width:130px; margin:0;">
                 <button onclick="filterByRange()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
                 <button onclick="downloadPDF()" class="nav-btn" style="background:#f44336; color:white;">📄 PDF</button>
@@ -99,7 +99,7 @@
         </div>
 
         <div id="pdf-content">
-            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS</h2>
+            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS REPORT</h2>
             <div style="max-height: 550px; overflow-y: auto;">
                 <table id="mainTable">
                     <thead id="table-head"></thead>
@@ -112,7 +112,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxQUtF_GR4k6TyR_0lP_KSxRHc7PI3h5lHCgmpCmCXWOo4nqNjetViEzONLEr6kp-LW8A/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycb3mLcFpjv9wgKXCADX-VMQhEfGecW96YLMihma98O4GffMOua4KYkGZZWnHCX5fAg72Q/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -126,6 +126,8 @@
 
     function showSection(sheet, btn) {
         currentSheet = sheet;
+        document.getElementById('input-panel').style.display = 'block';
+        document.getElementById('filter-area').style.display = 'block';
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('dash-title').innerText = sheet.toUpperCase().replace('_', ' ') + " Ledger";
@@ -158,23 +160,25 @@
         if(v === 'bk') selector.value = "Bank (bk)";
         if(v === 'st') selector.value = "Staff (st)";
         if(v === 'tr') selector.value = "Truck (tr)";
-        if(v === 'dp') selector.value = "Depo (dp)";
         if(v === 'ex') selector.value = "Expenditure (exp)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
-        const head = document.getElementById('table-head');
-        head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
+        document.getElementById('table-head').innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
         body.innerHTML = "<tr><td colspan='4'>🔄 Syncing Ledger...</td></tr>";
         
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
-            masterData = data.history.reverse();
-            document.getElementById('total-in').innerText = "₹" + Number(data.totalIn).toLocaleString();
-            document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
-            document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
+            
+            const tin = parseFloat(data.totalIn) || 0;
+            const tout = parseFloat(data.totalOut) || 0;
+            document.getElementById('total-in').innerText = "₹" + tin.toLocaleString();
+            document.getElementById('total-out').innerText = "₹" + tout.toLocaleString();
+            document.getElementById('net-balance').innerText = "₹" + (tin - tout).toLocaleString();
+            
+            masterData = (data.history || []).reverse();
             renderTable(masterData);
         } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>Server Connection Failed.</td></tr>"; }
     }
@@ -184,10 +188,34 @@
         const foot = document.getElementById('table-foot');
         let sIn = 0, sOut = 0;
         body.innerHTML = rows.map(i => {
-            sIn += Number(i.in || 0); sOut += Number(i.out || 0);
-            return `<tr><td>${new Date(i.date).toLocaleDateString('en-IN')}</td><td>${i.desc}</td><td style="color:green">₹${i.in || '-'}</td><td style="color:red">₹${i.out || '-'}</td></tr>`;
+            const valIn = parseFloat(i.in) || 0;
+            const valOut = parseFloat(i.out) || 0;
+            sIn += valIn; sOut += valOut;
+            return `<tr><td>${new Date(i.date).toLocaleDateString('en-IN')}</td><td>${i.desc}</td><td style="color:green">₹${valIn || '-'}</td><td style="color:red">₹${valOut || '-'}</td></tr>`;
         }).join('');
         foot.innerHTML = `<tr class="total-row"><td colspan="2">GRAND TOTAL</td><td>₹${sIn.toLocaleString()}</td><td>₹${sOut.toLocaleString()}</td></tr>`;
+    }
+
+    async function showReports(btn) {
+        document.getElementById('input-panel').style.display = 'none';
+        document.getElementById('filter-area').style.display = 'none';
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('dash-title').innerText = "MONTHLY REPORTS";
+        
+        const body = document.getElementById('list-body');
+        document.getElementById('table-head').innerHTML = `<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>`;
+        body.innerHTML = "<tr><td colspan='5'>🔄 Generating Reports...</td></tr>";
+        
+        try {
+            const res = await fetch(`${scriptURL}?action=getReports`);
+            const data = await res.json();
+            body.innerHTML = Object.keys(data.monthly).reverse().map(m => {
+                const r = data.monthly[m];
+                return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">₹${r.in.toLocaleString()}</td><td style="color:red">₹${r.out.toLocaleString()}</td><td style="font-weight:bold">₹${r.closing.toLocaleString()}</td></tr>`;
+            }).join('');
+            document.getElementById('table-foot').innerHTML = "";
+        } catch (e) { body.innerHTML = "<tr><td colspan='5' style='color:red'>Data not available for reports.</td></tr>"; }
     }
 
     function filterByRange() {
@@ -205,7 +233,7 @@
         document.getElementById('print-title').style.display = 'block';
         document.getElementById('print-title').innerText = "KRISHAN RICE MILLS - " + currentSheet.toUpperCase();
         const opt = { margin: 0.5, filename: currentSheet + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save().then(() => {
+        html2pdf().from(element).set(opt).save().then(() => {
             document.getElementById('print-title').style.display = 'none';
         });
     }
@@ -217,7 +245,7 @@
         const dt = document.getElementById('entryDate').value;
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
         
-        if(!finalDesc || !a) return alert("Please fill details!");
+        if(!finalDesc || !a) return alert("Details bharein!");
         document.getElementById('status').innerText = "⏳ Saving...";
         
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
