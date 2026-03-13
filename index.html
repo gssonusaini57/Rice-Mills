@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishan Rice Mills | Full Management & PDF</title>
+    <title>Krishan Rice Mills | Pro Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
@@ -44,7 +44,10 @@
 </head>
 <body>
 
-<header><h1>KRISHAN RICE MILLS</h1></header>
+<header>
+    <h1>KRISHAN RICE MILLS</h1>
+    <button onclick="runConnectionTest()" style="position:absolute; right:10px; top:15px; background:white; color:var(--primary); border:none; padding:5px 10px; border-radius:5px; font-size:0.7rem; cursor:pointer;">Test Link</button>
+</header>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -73,7 +76,7 @@
     <div id="input-panel" class="panel">
         <h3>Nayi Entry</h3>
         <input type="date" id="entryDate">
-        <label>Select Ledger Account:</label>
+        <label>Account Selection:</label>
         <div id="selector-container"></div>
         <input type="text" id="desc" placeholder="Details (bk, st, ad shortcuts)..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
@@ -93,11 +96,12 @@
                 <button onclick="filterByRange()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
                 <button onclick="downloadPDF()" class="nav-btn" style="background:#f44336; color:white;">📄 PDF</button>
                 <button onclick="window.print()" class="nav-btn" style="background:#2196f3; color:white;">🖨️ Print</button>
+                <button onclick="fetchData()" class="nav-btn">Reset</button>
             </div>
         </div>
 
         <div id="pdf-content">
-            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS - REPORT</h2>
+            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS</h2>
             <div style="max-height: 550px; overflow-y: auto;">
                 <table id="mainTable">
                     <thead id="table-head"></thead>
@@ -136,6 +140,7 @@
         let options = '<option value="">-- Manual Entry --</option>';
         if(sheet === 'daily') {
             options += `
+                <option value="Expenditure (exp)">💸 Expenditure</option>
                 <option value="Ashok (ad)">👤 Ashok Depo</option>
                 <option value="Bank (bk)">💰 Bank Entry</option>
                 <option value="Staff (st)">👥 Staff Salary</option>
@@ -156,13 +161,14 @@
         if(v === 'st') selector.value = "Staff (st)";
         if(v === 'tr') selector.value = "Truck (tr)";
         if(v === 'dp') selector.value = "Depo (dp)";
+        if(v === 'ex') selector.value = "Expenditure (exp)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         const head = document.getElementById('table-head');
         head.innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>🔄 Loading Ledger...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>Syncing...</td></tr>";
         
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
@@ -172,7 +178,7 @@
             document.getElementById('total-out').innerText = "₹" + Number(data.totalOut).toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + Number(data.balance).toLocaleString();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>⚠️ Error connecting to server.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>Connection Error.</td></tr>"; }
     }
 
     function renderTable(rows) {
@@ -199,8 +205,8 @@
     function downloadPDF() {
         const element = document.getElementById('pdf-content');
         document.getElementById('print-title').style.display = 'block';
-        document.getElementById('print-title').innerText = "Krishan Rice Mills - " + currentSheet.toUpperCase();
-        const opt = { margin: 0.5, filename: currentSheet + '_ledger.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+        document.getElementById('print-title').innerText = "KRISHAN RICE MILLS - " + currentSheet.toUpperCase();
+        const opt = { margin: 0.5, filename: currentSheet + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
         html2pdf().set(opt).from(element).save().then(() => {
             document.getElementById('print-title').style.display = 'none';
         });
@@ -214,10 +220,18 @@
         const finalDesc = name && customDesc ? `${name}: ${customDesc}` : (name || customDesc);
         
         if(!finalDesc || !a) return alert("Details bharein!");
-        document.getElementById('status').innerText = "⏳ Saving...";
+        document.getElementById('status').innerText = "Saving...";
         
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: dt })})
         .then(() => { location.reload(); });
+    }
+
+    async function runConnectionTest() {
+        try {
+            const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
+            const data = await res.json();
+            if(data.history) alert("✅ Connection Successful!");
+        } catch (e) { alert("❌ Connection Failed. Check URL & Settings."); }
     }
 </script>
 </body>
