@@ -9,32 +9,25 @@
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
-        
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; border: none; }
         .nav-btn.active { background: var(--primary); color: white; }
-
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
         .bal-val { font-size: 1.2rem; font-weight: bold; display: block; color: var(--accent); }
-
         .main-wrapper { display: flex; max-width: 1300px; margin: 10px auto; gap: 20px; padding: 0 15px; flex-wrap: wrap; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; min-width: 350px; }
-
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
         .tool-bar { background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #c8e6c9; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
         th { background: #f8fafc; color: var(--primary); }
         .total-row { background: #f1f8e9; font-weight: bold; border-top: 2px solid var(--primary); }
-
         @media print { .nav-menu, #input-panel, .tool-bar, header button { display: none !important; } .main-wrapper { display: block; } #display-panel { width: 100%; } }
         @media (max-width: 768px) { .main-wrapper { flex-direction: column; } #input-panel { flex: none; width: 100%; } }
     </style>
@@ -71,10 +64,10 @@
 
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
-        <h3 style="margin-top:0; color:var(--primary);">New Entry</h3>
+        <h3 style="margin-top:0; color:var(--primary);">Entry Form</h3>
         <input type="date" id="entryDate">
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details (bk, st, lb, ad, dp)..." onkeyup="checkShortcuts(this.value)">
+        <input type="text" id="desc" placeholder="Details (bk, st, lb, ad, kj, sk, jw)..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
@@ -86,7 +79,7 @@
     <div id="display-panel" class="panel">
         <div id="filter-area">
             <div class="tool-bar">
-                <input type="text" id="searchInput" placeholder="🔍 Search description..." onkeyup="searchTable()" style="margin:0; flex:1;">
+                <input type="text" id="searchInput" placeholder="🔍 Search descriptions..." onkeyup="searchTable()" style="margin:0; flex:1;">
                 <button onclick="downloadPDF()" class="nav-btn" style="background:var(--red); color:white; margin:0;">📄 PDF</button>
                 <button onclick="window.print()" class="nav-btn" style="background:#2196f3; color:white; margin:0;">🖨️ Print</button>
             </div>
@@ -98,7 +91,6 @@
                 <button onclick="fetchData()" class="nav-btn">Reset</button>
             </div>
         </div>
-
         <div id="pdf-content">
             <table id="mainTable">
                 <thead id="table-head"></thead>
@@ -138,13 +130,17 @@
         if(['daily', 'salary', 'labour'].includes(sheet)) {
             let options = '<option value="">-- Direct Entry --</option>';
             if(sheet === 'daily') {
-                options += `<option value="Expenditure (exp)">💸 Exp</option>
-                            <option value="Ashok (ad)">👤 Ashok</option>
-                            <option value="Bank (bk)">💰 Bank</option>
-                            <option value="Staff (st)">👥 Staff</option>
-                            <option value="Labour (lb)">👷 Labour</option>
-                            <option value="Depo (dp)">🏢 Depo Exp</option>
-                            <option value="Truck (tr)">🚚 Truck Rent</option>`;
+                options += `
+                    <option value="Expenditure (exp)">💸 Expenditure</option>
+                    <option value="Ashok (ad)">👤 Ashok Depo</option>
+                    <option value="Bank (bk)">💰 Bank Entry</option>
+                    <option value="Staff (st)">👥 Staff Salary</option>
+                    <option value="Labour (lb)">👷 Labour Wages</option>
+                    <option value="Karamjeet (kj)">👤 Karamjeet</option>
+                    <option value="Sukhwinder (sk)">👤 Sukhwinder</option>
+                    <option value="Jaswinder (jw)">👤 Jaswinder</option>
+                    <option value="Depo (dp)">🏢 Depo Exp</option>
+                    <option value="Truck (tr)">🚚 Truck Rent</option>`;
             } else if(sheet === 'salary') {
                 options += `<option value="Staff Salary">Salary Payment</option><option value="Staff Advance">Advance</option>`;
             } else if(sheet === 'labour') {
@@ -159,9 +155,15 @@
     function checkShortcuts(val) {
         const s = document.getElementById('nameSelector'); if(!s) return;
         const v = val.toLowerCase();
-        if(v === 'ad') s.value = "Ashok (ad)"; if(v === 'bk') s.value = "Bank (bk)";
-        if(v === 'st') s.value = "Staff (st)"; if(v === 'lb') s.value = "Labour (lb)";
-        if(v === 'dp') s.value = "Depo (dp)"; if(v === 'tr') s.value = "Truck (tr)";
+        if(v === 'ad') s.value = "Ashok (ad)"; 
+        if(v === 'bk') s.value = "Bank (bk)";
+        if(v === 'st') s.value = "Staff (st)"; 
+        if(v === 'lb') s.value = "Labour (lb)";
+        if(v === 'kj') s.value = "Karamjeet (kj)";
+        if(v === 'sk') s.value = "Sukhwinder (sk)";
+        if(v === 'jw') s.value = "Jaswinder (jw)";
+        if(v === 'dp') s.value = "Depo (dp)"; 
+        if(v === 'tr') s.value = "Truck (tr)";
     }
 
     async function fetchData() {
@@ -176,7 +178,7 @@
             document.getElementById('net-balance').innerText = "₹" + (parseFloat(data.balance) || 0).toLocaleString();
             masterData = (data.history || []).reverse();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4'>❌ Error Syncing</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4'>❌ Error</td></tr>"; }
     }
 
     function renderTable(rows) {
