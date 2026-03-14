@@ -50,7 +50,7 @@
     <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showReports(this)">📊 REPORTS</button>
 </div>
 
-<div id="debugBox" style="display:none; background:#fffde7; border:1px solid #ffd54f; padding:10px; margin:10px auto; max-width:950px; border-radius:10px; text-align:center; font-size:0.8rem;"></div>
+<div id="debugBox" style="display:none; background:#fffde7; border:1px solid #ffd54f; padding:10px; margin:10px auto; max-width:950px; border-radius:10px; text-align:center;"></div>
 
 <div class="balance-card">
     <h3 id="dash-title" style="margin:0;">DAILY LEDGER</h3>
@@ -98,7 +98,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby1knRWrX6e6bvAl80uz175vjeHeoMI21NSyMVXbnVBDD40bo7PRCLtWOzEhJNir8IidA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyKcPqkV0JOvCX2i2gv1awgsnbJKZnoBmQ-cXeMNJcorpyCJN05uyjfV_PsXjM-Zk3vkA/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -112,18 +112,12 @@
 
     async function runConnectionTest() {
         const debug = document.getElementById('debugBox');
-        debug.style.display = 'block';
-        debug.innerHTML = "🔄 Testing Cloud Link...";
+        debug.style.display = 'block'; debug.innerHTML = "🔄 Testing Connection...";
         try {
             const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
             const data = await res.json();
-            if(data.history) {
-                debug.innerHTML = "<span style='color:green'>✅ Connection Successful! Ledger is online.</span>";
-                setTimeout(() => { debug.style.display = 'none'; }, 4000);
-            }
-        } catch (e) {
-            debug.innerHTML = "<span style='color:red'>❌ Connection Failed! <br>1. Check if 'Anyone' access is ON. <br>2. Check if you Authorized the script.</span>";
-        }
+            if(data) { debug.innerHTML = "<span style='color:green'>✅ Connected! Link is Working.</span>"; setTimeout(()=>debug.style.display='none',3000); }
+        } catch (e) { debug.innerHTML = "<span style='color:red'>❌ Connection Fail. URL or Permission issue.</span>"; }
     }
 
     function showSection(sheet, btn) {
@@ -141,53 +135,44 @@
         const container = document.getElementById('selector-container');
         let options = '<option value="">-- Manual --</option>';
         if(sheet === 'daily') {
-            options += `
-                <option value="Expenditure (exp)">💸 Expenditure</option>
-                <option value="Ashok (ad)">👤 Ashok Depo</option>
-                <option value="Bank (bk)">💰 Bank Entry</option>
-                <option value="Staff (st)">👥 Staff Salary</option>
-                <option value="Karamjeet">👤 Karamjeet</option>
-                <option value="Sukhwinder">👤 Sukhwinder</option>
-                <option value="Jaswinder">👤 Jaswinder</option>
-                <option value="Depo (dp)">🏢 Depo Exp</option>
-                <option value="Truck (tr)">🚚 Truck Rent</option>`;
+            options += `<option value="Expenditure (exp)">💸 Expenditure</option>
+                        <option value="Ashok (ad)">👤 Ashok Depo</option>
+                        <option value="Bank (bk)">💰 Bank Entry</option>
+                        <option value="Staff (st)">👥 Staff Salary</option>
+                        <option value="Karamjeet">👤 Karamjeet</option>
+                        <option value="Sukhwinder">👤 Sukhwinder</option>
+                        <option value="Jaswinder">👤 Jaswinder</option>
+                        <option value="Depo (dp)">🏢 Depo Exp</option>
+                        <option value="Truck (tr)">🚚 Truck Rent</option>`;
         }
         container.innerHTML = `<select id="nameSelector">${options}</select>`;
     }
 
     function checkShortcuts(val) {
-        const s = document.getElementById('nameSelector');
-        const v = val.toLowerCase();
-        if(v === 'ad') s.value = "Ashok (ad)";
-        if(v === 'bk') s.value = "Bank (bk)";
-        if(v === 'st') s.value = "Staff (st)";
-        if(v === 'ex') s.value = "Expenditure (exp)";
-        if(v === 'dp') s.value = "Depo (dp)";
-        if(v === 'tr') s.value = "Truck (tr)";
+        const s = document.getElementById('nameSelector'); const v = val.toLowerCase();
+        if(v === 'ad') s.value = "Ashok (ad)"; if(v === 'bk') s.value = "Bank (bk)";
+        if(v === 'st') s.value = "Staff (st)"; if(v === 'ex') s.value = "Expenditure (exp)";
+        if(v === 'dp') s.value = "Depo (dp)"; if(v === 'tr') s.value = "Truck (tr)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         document.getElementById('table-head').innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing Ledger...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
-            const tin = parseFloat(data.totalIn) || 0;
-            const tout = parseFloat(data.totalOut) || 0;
+            const tin = parseFloat(data.totalIn) || 0; const tout = parseFloat(data.totalOut) || 0;
             document.getElementById('total-in').innerText = "₹" + tin.toLocaleString();
             document.getElementById('total-out').innerText = "₹" + tout.toLocaleString();
             document.getElementById('net-balance').innerText = "₹" + (tin - tout).toLocaleString();
             masterData = (data.history || []).reverse();
             renderTable(masterData);
-        } catch (e) { 
-            body.innerHTML = "<tr><td colspan='4' style='color:red'>Server Connection Failed. Click 'Test Link' above.</td></tr>"; 
-        }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red'>Connection Fail.</td></tr>"; }
     }
 
     function renderTable(rows) {
-        const body = document.getElementById('list-body');
-        let sIn = 0, sOut = 0;
+        const body = document.getElementById('list-body'); let sIn = 0, sOut = 0;
         body.innerHTML = rows.map(i => {
             const vI = parseFloat(i.in) || 0; const vO = parseFloat(i.out) || 0;
             sIn += vI; sOut += vO;
@@ -204,7 +189,7 @@
         document.getElementById('dash-title').innerText = "MONTHLY SUMMARY";
         const body = document.getElementById('list-body');
         document.getElementById('table-head').innerHTML = `<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>`;
-        body.innerHTML = "<tr><td colspan='5'>🔄 Generating Reports...</td></tr>";
+        body.innerHTML = "<tr><td colspan='5'>🔄 Generating...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?action=getReports`);
             const data = await res.json();
@@ -213,7 +198,7 @@
                 return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">₹${r.in.toLocaleString()}</td><td style="color:red">₹${r.out.toLocaleString()}</td><td style="font-weight:bold">₹${r.closing.toLocaleString()}</td></tr>`;
             }).join('');
             document.getElementById('table-foot').innerHTML = "";
-        } catch (e) { body.innerHTML = "<tr><td colspan='5' style='color:red'>No Report Data Found.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='5'>No Data Found.</td></tr>"; }
     }
 
     function filterByRange() {
@@ -222,20 +207,17 @@
         renderTable(masterData.filter(row => { const d = new Date(row.date); return d >= start && d <= end; }));
     }
 
-    function downloadPDF() {
-        const element = document.getElementById('pdf-content');
-        html2pdf().from(element).save();
-    }
+    function downloadPDF() { html2pdf().from(document.getElementById('pdf-content')).save(); }
 
     function sendData(type) {
         const name = document.getElementById('nameSelector').value;
         const customDesc = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
         const finalDesc = name ? `${name}: ${customDesc}` : customDesc;
-        if(!customDesc || !a) return alert("Details bharein!");
+        if(!customDesc || !a) return alert("Fill Details!");
         document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: document.getElementById('entryDate').value })})
-        .then(() => { location.reload(); });
+        .then(() => location.reload());
     }
 </script>
 </body>
