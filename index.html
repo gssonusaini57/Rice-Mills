@@ -9,35 +9,24 @@
         :root { --primary: #1b5e20; --secondary: #2e7d32; --accent: #ffd700; --red: #d32f2f; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
-        
         .test-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; cursor: pointer; z-index: 1001; }
-        .test-btn:hover { background: white; color: var(--primary); }
-
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; }
         .nav-btn.active { background: var(--primary); color: white; }
-
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
         .bal-val { font-size: 1.2rem; font-weight: bold; display: block; color: var(--accent); }
-
         .main-wrapper { display: flex; max-width: 1300px; margin: 10px auto; gap: 20px; padding: 0 15px; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; }
-
-        .debug-box { display: none; background: #fffde7; border: 1px solid #ffd54f; padding: 10px; margin: 10px auto; max-width: 950px; border-radius: 10px; font-size: 0.8rem; text-align: center; }
-
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
         .total-row { background: #f1f8e9; font-weight: bold; border-top: 2px solid var(--primary); }
-
-        @media print { .nav-menu, #input-panel, #filter-area, .test-btn { display: none !important; } .main-wrapper { display: block; } }
     </style>
 </head>
 <body>
@@ -46,8 +35,6 @@
     <h1>KRISHAN RICE MILLS</h1>
     <button class="test-btn" onclick="runConnectionTest()">Test Link</button>
 </header>
-
-<div id="debugBox" class="debug-box"></div>
 
 <div class="nav-menu">
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
@@ -63,6 +50,8 @@
     <button class="nav-btn" style="background:#ff9800; color:white;" onclick="showReports(this)">📊 REPORTS</button>
 </div>
 
+<div id="debugBox" style="display:none; background:#fffde7; border:1px solid #ffd54f; padding:10px; margin:10px auto; max-width:950px; border-radius:10px; text-align:center; font-size:0.8rem;"></div>
+
 <div class="balance-card">
     <h3 id="dash-title" style="margin:0;">DAILY LEDGER</h3>
     <div class="balance-grid">
@@ -74,7 +63,6 @@
 
 <div class="main-wrapper">
     <div id="input-panel" class="panel">
-        <h3>Nayi Entry</h3>
         <input type="date" id="entryDate">
         <div id="selector-container"></div>
         <input type="text" id="desc" placeholder="Details (bk, st, ad, ex, dp, tr)..." onkeyup="checkShortcuts(this.value)">
@@ -97,9 +85,7 @@
                 <button onclick="fetchData()" class="nav-btn">Reset</button>
             </div>
         </div>
-
         <div id="pdf-content">
-            <h2 id="print-title" style="display:none; text-align:center;">KRISHAN RICE MILLS</h2>
             <div style="max-height: 550px; overflow-y: auto;">
                 <table id="mainTable">
                     <thead id="table-head"></thead>
@@ -112,7 +98,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzkf5HBf6RE-4u62T1zMBpTugtBiFBotM_7N16rZ2Xl3og13x64L76aUBAu97mK-hVSnQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycby1knRWrX6e6bvAl80uz175vjeHeoMI21NSyMVXbnVBDD40bo7PRCLtWOzEhJNir8IidA/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -127,16 +113,16 @@
     async function runConnectionTest() {
         const debug = document.getElementById('debugBox');
         debug.style.display = 'block';
-        debug.innerHTML = "🔄 Testing Cloud Connection...";
+        debug.innerHTML = "🔄 Testing Cloud Link...";
         try {
             const res = await fetch(`${scriptURL}?sheet=daily&t=${new Date().getTime()}`);
             const data = await res.json();
             if(data.history) {
-                debug.innerHTML = "<span style='color:green'>✅ Server Connected Successfully!</span>";
+                debug.innerHTML = "<span style='color:green'>✅ Connection Successful! Ledger is online.</span>";
                 setTimeout(() => { debug.style.display = 'none'; }, 4000);
             }
         } catch (e) {
-            debug.innerHTML = "<span style='color:red'>❌ Link Error! Set Access to 'Anyone' and Update URL.</span>";
+            debug.innerHTML = "<span style='color:red'>❌ Connection Failed! <br>1. Check if 'Anyone' access is ON. <br>2. Check if you Authorized the script.</span>";
         }
     }
 
@@ -153,7 +139,7 @@
 
     function renderSelector(sheet) {
         const container = document.getElementById('selector-container');
-        let options = '<option value="">-- Manual Entry --</option>';
+        let options = '<option value="">-- Manual --</option>';
         if(sheet === 'daily') {
             options += `
                 <option value="Expenditure (exp)">💸 Expenditure</option>
@@ -183,7 +169,7 @@
     async function fetchData() {
         const body = document.getElementById('list-body');
         document.getElementById('table-head').innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>🔄 Syncing Ledger...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
@@ -194,7 +180,9 @@
             document.getElementById('net-balance').innerText = "₹" + (tin - tout).toLocaleString();
             masterData = (data.history || []).reverse();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4'>❌ Connection Failed</td></tr>"; }
+        } catch (e) { 
+            body.innerHTML = "<tr><td colspan='4' style='color:red'>Server Connection Failed. Click 'Test Link' above.</td></tr>"; 
+        }
     }
 
     function renderTable(rows) {
@@ -236,19 +224,18 @@
 
     function downloadPDF() {
         const element = document.getElementById('pdf-content');
-        document.getElementById('print-title').style.display = 'block';
-        const opt = { margin: 0.5, filename: currentSheet + '_report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-        html2pdf().from(element).set(opt).save().then(() => { document.getElementById('print-title').style.display = 'none'; });
+        html2pdf().from(element).save();
     }
 
     function sendData(type) {
-        const n = document.getElementById('nameSelector').value;
-        const d = document.getElementById('desc').value;
+        const name = document.getElementById('nameSelector').value;
+        const customDesc = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
-        if(!d || !a) return alert("Details bharein!");
+        const finalDesc = name ? `${name}: ${customDesc}` : customDesc;
+        if(!customDesc || !a) return alert("Details bharein!");
         document.getElementById('status').innerText = "⏳ Saving...";
-        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: n ? `${n}: ${d}` : d, amount: a, type: type, customDate: document.getElementById('entryDate').value })})
-        .then(() => location.reload());
+        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: finalDesc, amount: a, type: type, customDate: document.getElementById('entryDate').value })})
+        .then(() => { location.reload(); });
     }
 </script>
 </body>
