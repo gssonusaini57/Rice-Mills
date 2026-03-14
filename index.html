@@ -10,45 +10,32 @@
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
         header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: relative; }
         
-        /* Navigation */
         .nav-menu { display: flex; justify-content: center; gap: 5px; padding: 10px; background: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .nav-btn { background: #f8fafc; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--primary); font-size: 0.8rem; border: none; }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Dashboard */
         .balance-card { max-width: 950px; margin: 15px auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; border-radius: 15px; text-align: center; }
         .balance-grid { display: flex; justify-content: space-around; margin-top: 10px; }
         .bal-val { font-size: 1.2rem; font-weight: bold; display: block; color: var(--accent); }
 
-        /* Main Layout */
         .main-wrapper { display: flex; max-width: 1300px; margin: 10px auto; gap: 20px; padding: 0 15px; flex-wrap: wrap; }
         .panel { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         #input-panel { flex: 0 0 330px; height: fit-content; }
         #display-panel { flex: 1; min-width: 350px; }
 
-        /* Inputs */
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; }
         .btn-group { display: flex; gap: 10px; }
         .btn-in { flex: 1; background: var(--secondary); color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-out { flex: 1; background: var(--red); color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        /* Search and Tools */
         .tool-bar { background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #c8e6c9; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
         
-        /* Table */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
         th { background: #f8fafc; color: var(--primary); }
         .total-row { background: #f1f8e9; font-weight: bold; border-top: 2px solid var(--primary); }
 
-        /* Printing logic */
-        @media print {
-            .nav-menu, #input-panel, .tool-bar, .nav-btn, header button { display: none !important; }
-            .main-wrapper { display: block; }
-            .panel { box-shadow: none; padding: 0; }
-            #display-panel { width: 100%; }
-        }
-
+        @media print { .nav-menu, #input-panel, .tool-bar, header button { display: none !important; } .main-wrapper { display: block; } #display-panel { width: 100%; } }
         @media (max-width: 768px) { .main-wrapper { flex-direction: column; } #input-panel { flex: none; width: 100%; } }
     </style>
 </head>
@@ -62,8 +49,9 @@
     <button class="nav-btn active" onclick="showSection('daily', this)">Daily Cash</button>
     <button class="nav-btn" onclick="showSection('bank', this)">Bank</button>
     <button class="nav-btn" onclick="showSection('salary', this)">Staff</button>
+    <button class="nav-btn" onclick="showSection('labour', this)">👷 Labour</button>
     <button class="nav-btn" onclick="showSection('expenditure', this)">💸 Exp</button>
-    <button class="nav-btn" onclick="showSection('ashok_depo', this)">👤 Ashok Depo</button>
+    <button class="nav-btn" onclick="showSection('ashok_depo', this)">👤 Ashok</button>
     <button class="nav-btn" onclick="showSection('karamjeet', this)">Karamjeet</button>
     <button class="nav-btn" onclick="showSection('sukhwinder', this)">Sukhwinder</button>
     <button class="nav-btn" onclick="showSection('jaswinder', this)">Jaswinder</button>
@@ -86,7 +74,7 @@
         <h3 style="margin-top:0; color:var(--primary);">New Entry</h3>
         <input type="date" id="entryDate">
         <div id="selector-container"></div>
-        <input type="text" id="desc" placeholder="Details (bk, st, dp, ex...)" onkeyup="checkShortcuts(this.value)">
+        <input type="text" id="desc" placeholder="Details (bk, st, lb, ad, dp)..." onkeyup="checkShortcuts(this.value)">
         <input type="number" id="amt" placeholder="Amount ₹">
         <div class="btn-group">
             <button class="btn-in" onclick="sendData('IN')">CASH IN</button>
@@ -98,13 +86,13 @@
     <div id="display-panel" class="panel">
         <div id="filter-area">
             <div class="tool-bar">
-                <input type="text" id="searchInput" placeholder="🔍 Search descriptions..." onkeyup="searchTable()" style="margin:0; flex:1;">
+                <input type="text" id="searchInput" placeholder="🔍 Search description..." onkeyup="searchTable()" style="margin:0; flex:1;">
                 <button onclick="downloadPDF()" class="nav-btn" style="background:var(--red); color:white; margin:0;">📄 PDF</button>
                 <button onclick="window.print()" class="nav-btn" style="background:#2196f3; color:white; margin:0;">🖨️ Print</button>
             </div>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom:15px;">
                 <input type="date" id="startDate" style="width:130px; margin:0;">
-                <span style="font-size:0.8rem;">to</span>
+                <span>to</span>
                 <input type="date" id="endDate" style="width:130px; margin:0;">
                 <button onclick="filterByRange()" class="nav-btn" style="background:var(--primary); color:white;">Filter</button>
                 <button onclick="fetchData()" class="nav-btn">Reset</button>
@@ -112,20 +100,17 @@
         </div>
 
         <div id="pdf-content">
-            <h2 id="print-header" style="text-align:center; display:none;">KRISHAN RICE MILLS - REPORT</h2>
-            <div style="overflow-x: auto;">
-                <table id="mainTable">
-                    <thead id="table-head"></thead>
-                    <tbody id="list-body"></tbody>
-                    <tfoot id="table-foot"></tfoot>
-                </table>
-            </div>
+            <table id="mainTable">
+                <thead id="table-head"></thead>
+                <tbody id="list-body"></tbody>
+                <tfoot id="table-foot"></tfoot>
+            </table>
         </div>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwlNkhISiJ43NdB3yKpVT0BWiHfM1iHW9t1sdAeRQ55TUYyK6BpLYbjPVNtvBQAPlQhVw/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzX1wVsK-vk9X8PLulchOD2njKyOJzr4lTFfVtgeA8Ah6Gb1YEOgfBJSqpTJrIVMa0QNg/exec';
     let currentSheet = 'daily';
     let masterData = [];
 
@@ -150,32 +135,39 @@
 
     function renderSelector(sheet) {
         const container = document.getElementById('selector-container');
-        let options = '<option value="">-- Direct Entry --</option>';
-        if(sheet === 'daily') {
-            options += `<option value="Expenditure (exp)">💸 Expenditure</option>
-                        <option value="Ashok (ad)">👤 Ashok Depo</option>
-                        <option value="Bank (bk)">💰 Bank Entry</option>
-                        <option value="Staff (st)">👥 Staff Salary</option>
-                        <option value="Karamjeet">👤 Karamjeet</option>
-                        <option value="Sukhwinder">👤 Sukhwinder</option>
-                        <option value="Jaswinder">👤 Jaswinder</option>
-                        <option value="Depo (dp)">🏢 Depo Exp</option>
-                        <option value="Truck (tr)">🚚 Truck Rent</option>`;
+        if(['daily', 'salary', 'labour'].includes(sheet)) {
+            let options = '<option value="">-- Direct Entry --</option>';
+            if(sheet === 'daily') {
+                options += `<option value="Expenditure (exp)">💸 Exp</option>
+                            <option value="Ashok (ad)">👤 Ashok</option>
+                            <option value="Bank (bk)">💰 Bank</option>
+                            <option value="Staff (st)">👥 Staff</option>
+                            <option value="Labour (lb)">👷 Labour</option>
+                            <option value="Depo (dp)">🏢 Depo Exp</option>
+                            <option value="Truck (tr)">🚚 Truck Rent</option>`;
+            } else if(sheet === 'salary') {
+                options += `<option value="Staff Salary">Salary Payment</option><option value="Staff Advance">Advance</option>`;
+            } else if(sheet === 'labour') {
+                options += `<option value="Labour Wages">Wages</option><option value="Labour Advance">Advance</option>`;
+            }
+            container.innerHTML = `<select id="nameSelector">${options}</select>`;
+        } else {
+            container.innerHTML = "";
         }
-        container.innerHTML = `<select id="nameSelector">${options}</select>`;
     }
 
     function checkShortcuts(val) {
-        const s = document.getElementById('nameSelector'); const v = val.toLowerCase();
+        const s = document.getElementById('nameSelector'); if(!s) return;
+        const v = val.toLowerCase();
         if(v === 'ad') s.value = "Ashok (ad)"; if(v === 'bk') s.value = "Bank (bk)";
-        if(v === 'st') s.value = "Staff (st)"; if(v === 'ex') s.value = "Expenditure (exp)";
+        if(v === 'st') s.value = "Staff (st)"; if(v === 'lb') s.value = "Labour (lb)";
         if(v === 'dp') s.value = "Depo (dp)"; if(v === 'tr') s.value = "Truck (tr)";
     }
 
     async function fetchData() {
         const body = document.getElementById('list-body');
         document.getElementById('table-head').innerHTML = `<tr><th>Date</th><th>Description</th><th>In (₹)</th><th>Out (₹)</th></tr>`;
-        body.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:20px;'>🔄 Syncing...</td></tr>";
+        body.innerHTML = "<tr><td colspan='4' style='text-align:center;'>🔄 Syncing...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?sheet=${currentSheet}&t=${new Date().getTime()}`);
             const data = await res.json();
@@ -184,7 +176,7 @@
             document.getElementById('net-balance').innerText = "₹" + (parseFloat(data.balance) || 0).toLocaleString();
             masterData = (data.history || []).reverse();
             renderTable(masterData);
-        } catch (e) { body.innerHTML = "<tr><td colspan='4' style='color:red;'>❌ Connection Error</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='4'>❌ Error Syncing</td></tr>"; }
     }
 
     function renderTable(rows) {
@@ -210,7 +202,6 @@
         document.getElementById('dash-title').innerText = "MONTHLY SUMMARY";
         const body = document.getElementById('list-body');
         document.getElementById('table-head').innerHTML = `<tr><th>Month</th><th>Opening</th><th>In (+)</th><th>Out (-)</th><th>Closing</th></tr>`;
-        body.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>🔄 Loading Reports...</td></tr>";
         try {
             const res = await fetch(`${scriptURL}?action=getReports&t=${new Date().getTime()}`);
             const data = await res.json();
@@ -219,7 +210,7 @@
                 return `<tr><td><b>${m}</b></td><td>₹${r.opening.toLocaleString()}</td><td style="color:green">₹${r.in.toLocaleString()}</td><td style="color:red">₹${r.out.toLocaleString()}</td><td style="font-weight:bold">₹${r.closing.toLocaleString()}</td></tr>`;
             }).join('');
             document.getElementById('table-foot').innerHTML = "";
-        } catch (e) { body.innerHTML = "<tr><td colspan='5'>Data fetch failed.</td></tr>"; }
+        } catch (e) { body.innerHTML = "<tr><td colspan='5'>Error</td></tr>"; }
     }
 
     function filterByRange() {
@@ -229,19 +220,17 @@
     }
 
     function sendData(type) {
-        const n = document.getElementById('nameSelector').value;
+        const s = document.getElementById('nameSelector');
+        const n = s ? s.value : "";
         const d = document.getElementById('desc').value;
         const a = document.getElementById('amt').value;
-        if(!d || !a) return alert("Details and Amount are required!");
+        if(!d || !a) return alert("Details filled correctly?");
         document.getElementById('status').innerText = "⏳ Saving...";
         fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ targetSheet: currentSheet, description: n ? `${n}: ${d}` : d, amount: a, type: type, customDate: document.getElementById('entryDate').value })})
         .then(() => location.reload());
     }
 
-    function downloadPDF() {
-        const element = document.getElementById('pdf-content');
-        html2pdf().from(element).save(currentSheet + '_ledger.pdf');
-    }
+    function downloadPDF() { html2pdf().from(document.getElementById('pdf-content')).save(currentSheet + '_ledger.pdf'); }
 </script>
 </body>
 </html>
